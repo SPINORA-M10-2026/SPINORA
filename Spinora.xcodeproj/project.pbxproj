@@ -40,11 +40,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		336637F22FB4218E0060CDF2 /* Code */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Code;
-			sourceTree = "<group>";
-		};
 		601A021E2FB418E800CB8B9E /* Spinora */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -93,7 +88,6 @@
 		601A02132FB418E800CB8B9E = {
 			isa = PBXGroup;
 			children = (
-				336637F22FB4218E0060CDF2 /* Code */,
 				601A021E2FB418E800CB8B9E /* Spinora */,
 				601A02382FB418E900CB8B9E /* SpinoraTests */,
 				601A02422FB418E900CB8B9E /* SpinoraUITests */,
@@ -127,7 +121,6 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				336637F22FB4218E0060CDF2 /* Code */,
 				601A021E2FB418E800CB8B9E /* Spinora */,
 			);
 			name = Spinora;
@@ -304,6 +297,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -336,6 +330,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
