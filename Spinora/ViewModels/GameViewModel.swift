@@ -26,12 +26,18 @@ class GameViewModel {
         didSet { onStateChanged?(state) }
     }
     
-    // View-Ready Properties
+    // setup stats player
     var playerAtkText: String { "⚔️ ATK: \(player.baseAttack)" }
     var playerHpText: String { "❤️ HP: \(player.hp)" }
+    
+    // setup stats enemy
     var enemyHpText: String { "HP: \(enemy.hp) ❤️" }
     var enemyElementText: String { "Weak: \(enemy.element?.emoji ?? "❓")" }
+    
+    // setup stage
     var stageText: String { "STAGE \(currentStage)" }
+    
+    // setup reward gacha
     var rewardAtkText: String { "PILIH: +\(pendingAtkBonus) ATK" }
     var rewardHpText: String { "PILIH: +\(pendingHpBonus) HP" }
     
@@ -210,71 +216,71 @@ class GameViewModel {
     
     // MARK: - Data Persistence (SwiftData)
         
-        private func saveProgress() {
-            guard let context = modelContext else { return }
-            
-            // Hapus data lama agar kita hanya punya 1 save data aktif
-            clearProgress()
-            
-            // Buat objek data baru
-            let newSave = GameSaveData(
-                currentStage: currentStage,
-                playerHP: player.hp,
-                playerMaxHP: player.maxHp,
-                playerATK: player.baseAttack
-            )
-            
-            // Masukkan ke database dan simpan
-            context.insert(newSave)
-            do {
-                try context.save()
-                print("Data berhasil disimpan via SwiftData! Stage: \(currentStage)")
-            } catch {
-                print("Gagal menyimpan data: \(error)")
-            }
+    private func saveProgress() {
+        guard let context = modelContext else { return }
+        
+        // Hapus data lama agar kita hanya punya 1 save data aktif
+        clearProgress()
+        
+        // Buat objek data baru
+        let newSave = GameSaveData(
+            currentStage: currentStage,
+            playerHP: player.hp,
+            playerMaxHP: player.maxHp,
+            playerATK: player.baseAttack
+        )
+        
+        // Masukkan ke database dan simpan
+        context.insert(newSave)
+        do {
+            try context.save()
+            print("Data berhasil disimpan via SwiftData! Stage: \(currentStage)")
+        } catch {
+            print("Gagal menyimpan data: \(error)")
         }
+    }
         
     private func loadProgress() {
-            guard let context = modelContext else { return }
-            
-            let descriptor = FetchDescriptor<GameSaveData>()
-            
-            do {
-                let saves = try context.fetch(descriptor)
-                
-                if let savedData = saves.first {
-                    self.currentStage = savedData.currentStage
-                    
-                    // PERBAIKAN: Gunakan playerHP dari database untuk darah saat ini
-                    self.player = Character(
-                        hp: savedData.playerHP,
-                        maxHp: savedData.playerMaxHP,
-                        baseAttack: savedData.playerATK
-                    )
-                    
-                    // Buat ulang musuh sesuai stage terakhir
-                    self.enemy = Character(
-                        hp: 50 + (currentStage * 10),
-                        maxHp: 50 + (currentStage * 10),
-                        baseAttack: 5 + currentStage,
-                        element: Element.allCases.randomElement()!
-                    )
-                    print("Data berhasil dimuat! Lanjut ke Stage \(currentStage) dengan HP: \(player.hp)")
-                }
-            } catch {
-                print("Gagal memuat data: \(error)")
-            }
-        }
+        guard let context = modelContext else { return }
         
-        func clearProgress() {
-            guard let context = modelContext else { return }
+        let descriptor = FetchDescriptor<GameSaveData>()
+        
+        do {
+            let saves = try context.fetch(descriptor)
             
-            do {
-                // Hapus semua data GameSaveData
-                try context.delete(model: GameSaveData.self)
-                try context.save()
-            } catch {
-                print("Gagal menghapus data: \(error)")
+            if let savedData = saves.first {
+                self.currentStage = savedData.currentStage
+                
+                // PERBAIKAN: Gunakan playerHP dari database untuk darah saat ini
+                self.player = Character(
+                    hp: savedData.playerHP,
+                    maxHp: savedData.playerMaxHP,
+                    baseAttack: savedData.playerATK
+                )
+                
+                // Buat ulang musuh sesuai stage terakhir
+                self.enemy = Character(
+                    hp: 50 + (currentStage * 10),
+                    maxHp: 50 + (currentStage * 10),
+                    baseAttack: 5 + currentStage,
+                    element: Element.allCases.randomElement()!
+                )
+                print("Data berhasil dimuat! Lanjut ke Stage \(currentStage) dengan HP: \(player.hp)")
             }
+        } catch {
+            print("Gagal memuat data: \(error)")
         }
+    }
+    
+    func clearProgress() {
+        guard let context = modelContext else { return }
+        
+        do {
+            // Hapus semua data GameSaveData
+            try context.delete(model: GameSaveData.self)
+            try context.save()
+        } catch {
+            print("Gagal menghapus data: \(error)")
+        }
+    }
 }
