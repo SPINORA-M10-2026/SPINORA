@@ -44,4 +44,42 @@ extension GameScene {
             rerollText.name = "reroll_\(i)"
         }
     }
+    
+    // Fungsi untuk membuat efek visual Slot berputar
+    func animateSpin(for index: Int, finalEmoji: String) {
+        let label = slotElementLabels[index]
+        let dummyEmojis = ["💧", "🔥", "🪨"] // Daftar elemen untuk acakan visual
+        
+        var spinActions: [SKAction] = []
+        
+        // 1. Buat efek putaran cepat sebanyak 15 kali
+        for _ in 0..<15 {
+            let randomEmoji = SKAction.run {
+                // Pilih emoji acak hanya untuk visual putaran
+                label.text = dummyEmojis.randomElement()!
+            }
+            // Durasi 0.05 detik per frame (sangat cepat)
+            let wait = SKAction.wait(forDuration: 0.05)
+            
+            spinActions.append(randomEmoji)
+            spinActions.append(wait)
+        }
+        
+        // 2. Set hasil akhir yang sebenarnya dari ViewModel
+        let setFinalResult = SKAction.run {
+            label.text = finalEmoji
+        }
+        
+        // 3. Tambahkan efek pantulan (bounce) kecil saat berhenti agar memuaskan
+        let scaleUp = SKAction.scale(to: 1.4, duration: 0.1)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+        
+        // Gabungkan semua aksi
+        spinActions.append(setFinalResult)
+        spinActions.append(scaleUp)
+        spinActions.append(scaleDown)
+        
+        // Jalankan animasi pada label
+        label.run(SKAction.sequence(spinActions))
+    }
 }

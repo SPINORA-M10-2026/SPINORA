@@ -11,12 +11,23 @@ import SpriteKit
 extension GameScene {
     
     func bindViewModel() {
-        viewModel.onSlotsUpdated = { [weak self] in
+        viewModel.onSlotsUpdated = { [weak self] animatedIndices in
             guard let self = self else { return }
+            
             for (index, slot) in self.viewModel.slotsPresentation.enumerated() {
-                self.slotElementLabels[index].text = slot.emoji
                 
-                if let btn = self.rerollButtons[index] as SKShapeNode?,
+                // 2. CEK apakah slot ini ada di daftar yang harus dianimasikan
+                if animatedIndices.contains(index) {
+                    // Jika ya, jalankan animasi spin
+                    self.animateSpin(for: index, finalEmoji: slot.emoji)
+                } else {
+                    // Jika tidak, cukup pastikan teks emojinya benar tanpa animasi
+                    self.slotElementLabels[index].text = slot.emoji
+                }
+                
+                // Update visual tombol REROLL
+                // (Catatan: perhatikan penambahan as? SKShapeNode agar aman)
+                if let btn = self.rerollButtons[index] as? SKShapeNode,
                    let label = btn.children.first as? SKLabelNode {
                     
                     if slot.isMaxed {
@@ -28,6 +39,36 @@ extension GameScene {
                 }
             }
         }
+        
+//        viewModel.onSlotsUpdated = { [weak self] in
+//            guard let self = self else { return }
+//            for (index, slot) in self.viewModel.slotsPresentation.enumerated() {
+////                self.slotElementLabels[index].text = slot.emoji
+//                self.animateSpin(for: index, finalEmoji: slot.emoji)
+//                
+//                if let btn = self.rerollButtons[index] as SKShapeNode?,
+//                   let label = btn.children.first as? SKLabelNode {
+//                    
+//                    if slot.isMaxed {
+//                        btn.fillColor = .gray
+//                    } else {
+//                        btn.fillColor = SKColor(red: 0.8, green: 0.3, blue: 0.2, alpha: 1.0)
+//                    }
+//                    label.text = slot.buttonText
+//                }
+//                
+////                if let btn = self.rerollButtons[index] as SKShapeNode?,
+////                   let label = btn.children.first as? SKLabelNode {
+////                    
+////                    if slot.isMaxed {
+////                        btn.fillColor = .gray
+////                    } else {
+////                        btn.fillColor = SKColor(red: 0.8, green: 0.3, blue: 0.2, alpha: 1.0)
+////                    }
+////                    label.text = slot.buttonText
+////                }
+//            }
+//        }
         
         viewModel.onStatsUpdated = { [weak self] in
             guard let self = self, let vm = self.viewModel else { return }
@@ -60,7 +101,8 @@ extension GameScene {
         }
         
         viewModel.onStatsUpdated?()
-        viewModel.onSlotsUpdated?()
+//        viewModel.onSlotsUpdated?()
+        viewModel.onSlotsUpdated?([])
         updateButtonVisibility(for: viewModel.state)
     }
     

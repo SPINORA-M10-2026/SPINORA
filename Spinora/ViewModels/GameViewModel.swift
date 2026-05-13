@@ -59,7 +59,8 @@ class GameViewModel {
     
     // UI Callbacks
     var onStateChanged: ((GameState) -> Void)?
-    var onSlotsUpdated: (() -> Void)?
+//    var onSlotsUpdated: (() -> Void)?
+    var onSlotsUpdated: (([Int]) -> Void)?
     var onStatsUpdated: (() -> Void)?
     var onMessage: ((String) -> Void)?
     var onRewardReady: (() -> Void)?
@@ -94,7 +95,12 @@ class GameViewModel {
             slots[i].hasRerolled = false // Reset jatah reroll di setiap putaran baru
         }
         state = .playerTurn
-        onSlotsUpdated?()
+//        onSlotsUpdated?()
+        onSlotsUpdated?([0, 1, 2])
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.state = .playerTurn
+        }
     }
     
     func intentRerollSlot(at index: Int) {
@@ -106,7 +112,8 @@ class GameViewModel {
         slots[index].element = Element.allCases.randomElement()!
         slots[index].hasRerolled = true // Tandai bahwa jatah reroll sudah terpakai
         
-        onSlotsUpdated?()
+//        onSlotsUpdated?()
+        onSlotsUpdated?([index])
     }
     
     func intentAttack() {
