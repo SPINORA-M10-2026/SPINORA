@@ -38,7 +38,11 @@ extension GameScene {
         
         // Listen for Attack visual signal (set once)
         viewModel.onPlayerAttackVisual = { [weak self] in
-            self?.playPlayerAttackAnimation()
+            guard let self = self else { return }
+            // Play the player's melee animation
+            self.playPlayerAttackAnimation()
+            // Launch a simple projectile from player to enemy; duration matches ViewModel's 0.35s delay
+            self.launchProjectile(fromNodeNamed: "playerSprite", toNodeNamed: "enemySprite", color: SKColor.cyan, duration: 0.35)
         }
         
         // Listen for Defeat visual signal (set once)
@@ -46,6 +50,33 @@ extension GameScene {
             self?.playPlayerDefeatAnimation()
             self?.messageLabel.text = "YOU LOSE!"
             self?.messageLabel.fontColor = .red
+        }
+        
+        // Listen for Enemy attack visual (set once)
+        viewModel.onEnemyAttackVisual = { [weak self] in
+            guard let self = self else { return }
+            // Small pre-attack delay to telegraph the enemy attack
+            let delay = SKAction.wait(forDuration: 0.2)
+            let perform = SKAction.run { [weak self] in
+                self?.playEnemyAttackAnimation()
+                // Launch projectile to match the overall slowed timing (0.35)
+                self?.launchProjectile(fromNodeNamed: "enemySprite", toNodeNamed: "playerSprite", color: SKColor.orange, duration: 0.35)
+            }
+            self.run(SKAction.sequence([delay, perform]))
+        }
+        
+        // Listen for Player hit visual (set once)
+        viewModel.onPlayerHitVisual = { [weak self] in
+            // Flash the player sprite red briefly to indicate damage
+            guard let self = self,
+                  let player = self.childNode(withName: "playerSprite") as? SKSpriteNode else { return }
+            
+            player.removeAction(forKey: "playerHit")
+            player.color = .red
+            let turnRed = SKAction.run { player.colorBlendFactor = 1.0 }
+            let wait = SKAction.wait(forDuration: 0.15)
+            let restore = SKAction.run { player.colorBlendFactor = 0.0 }
+            player.run(SKAction.sequence([turnRed, wait, restore]), withKey: "playerHit")
         }
         
         // Listen for Enemy hit visual (set once)
@@ -121,5 +152,24 @@ extension GameScene {
             break
         }
     }
+    
+    // MARK: - Simple Projectile Helper
+    private func launchProjectile(fromNodeNamed startName: String, toNodeNamed endName: String, color: SKColor, duration: TimeInterval) {
+        guard let startNode = childNode(withName: startName) as? SKSpriteNode,
+              let endNode = childNode(withName: endName) as? SKSpriteNode else { return }
+        
+        // Create a simple circular projectile
+        let projectile = SKShapeNode(circleOfRadius: 6)
+        projectile.fillColor = color
+        projectile.strokeColor = .clear
+        projectile.position = startNode.position
+        projectile.zPosition = 20
+        addChild(projectile)
+        
+        // Animate towards the target and remove on impact
+        let move = SKAction.move(to: endNode.position, duration: duration)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.05)
+        let remove = SKAction.removeFromParent()
+        projectile.run(SKAction.sequence([move, fadeOut, remove]))
+    }
 }
-

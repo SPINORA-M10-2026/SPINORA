@@ -61,6 +61,8 @@ class GameViewModel {
     var onPlayerAttackVisual: (() -> Void)?
     var onPlayerDefeatVisual: (() -> Void)?
     var onEnemyHitVisual: (() -> Void)?
+    var onEnemyAttackVisual: (() -> Void)?
+    var onPlayerHitVisual: (() -> Void)?
     
     // MARK: - Initialization
     init() {
@@ -171,23 +173,32 @@ class GameViewModel {
     private func enemyTurn() {
         state = .enemyTurn
         
-        player.takeDamage(enemy.baseAttack)
-        onStatsUpdated?()
-        onMessage?("Enemy dealt \(enemy.baseAttack) damage!")
+        // Trigger enemy attack animation
+        onEnemyAttackVisual?()
         
-        if player.isDead {
-            state = .gameOver
-            onMessage?("GAME OVER! Restarting...")
-            onPlayerDefeatVisual?()
-            clearProgress()
+        // Delay to sync with the visual attack animation
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            guard let self = self else { return }
             
-            // Restart game after 2 seconds
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
-                self?.resetGame()
+            self.player.takeDamage(self.enemy.baseAttack)
+            self.onPlayerHitVisual?()
+            self.onStatsUpdated?()
+            self.onMessage?("Enemy dealt \(self.enemy.baseAttack) damage!")
+            
+            if self.player.isDead {
+                self.state = .gameOver
+                self.onMessage?("GAME OVER! Restarting...")
+                self.onPlayerDefeatVisual?()
+                self.clearProgress()
+                
+                // Restart game after 2 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                    self?.resetGame()
+                }
+            } else {
+                self.state = .idle
+                self.saveProgress()
             }
-        } else {
-            state = .idle
-            saveProgress()
         }
     }
     
@@ -279,4 +290,3 @@ class GameViewModel {
         try? context.save()
     }
 }
-

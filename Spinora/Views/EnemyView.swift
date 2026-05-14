@@ -9,27 +9,37 @@ import SpriteKit
 
 extension GameScene {
     func enemyView() {
-        enemyIdleAnimation()
+        setupEnemySprite()
+        startEnemyIdleAnimation()
         enemyHP()
     }
     
-    func enemyIdleAnimation () {
+    // Create enemy sprite once and reuse it
+    private func setupEnemySprite() {
+        // If already exists, do nothing
+        if childNode(withName: "enemySprite") as? SKSpriteNode != nil { return }
+        
         let x = frame.maxX - 60 // horizontal
         let y = frame.maxY - 120 // vertical
         
-        // setup
         let enemySprite = SKSpriteNode(imageNamed: "Idle 1")
-        enemySprite.name = "enemySprite" // Assign a name so playEnemyHitEffect() can find it
+        enemySprite.name = "enemySprite" // important for lookups
         enemySprite.position = CGPoint(x: x, y: y)
         enemySprite.size = CGSize(width: 100, height: 100)
         enemySprite.zPosition = 10
         addChild(enemySprite)
+    }
+    
+    // Start or resume the enemy idle loop on the existing sprite
+    func startEnemyIdleAnimation() {
+        guard let enemy = childNode(withName: "enemySprite") as? SKSpriteNode else { return }
         
-        // animation
+        // Ensure previous attack animation doesn't overlap
+        enemy.removeAction(forKey: "enemyAttackAnimation")
+        
         let idleFrames = [SKTexture(imageNamed: "Idle 1"), SKTexture(imageNamed: "Idle 2")]
         let animate = SKAction.animate(with: idleFrames, timePerFrame: 0.5)
-        
-        enemySprite.run(.repeatForever(animate), withKey: "EnemydleAnimation")
+        enemy.run(.repeatForever(animate), withKey: "enemyIdleAnimation")
     }
     
     func enemyHP () {
@@ -88,4 +98,31 @@ extension GameScene {
 //        // ... properti lainnya ...
 //        addChild(enemySprite)
 //    }
+    
+    // MARK: - Enemy Attack Animation
+    func playEnemyAttackAnimation() {
+        // Find the sprite safely using its assigned name
+        guard let enemy = childNode(withName: "enemySprite") as? SKSpriteNode else { return }
+        
+        // Stop any existing actions tagged as attack to avoid overlap
+        enemy.removeAction(forKey: "enemyIdleAnimation")
+        
+        // Load the same attack frames as the player
+        let attackFrames = (1...5).map { SKTexture(imageNamed: "Attack \($0)") }
+        let animateAction = SKAction.animate(with: attackFrames, timePerFrame: 0.12)
+        
+        // Slight lunge towards the player and back
+        let moveForward = SKAction.moveBy(x: -5, y: 0, duration: 0.3)
+        let moveBack = SKAction.moveBy(x: 5, y: 0, duration: 0.3)
+        let moveSequence = SKAction.sequence([moveForward, moveBack])
+        
+        let attackGroup = SKAction.group([animateAction, moveSequence])
+        
+        // Return to idle after attacking by restarting idle animation
+        let returnToIdle = SKAction.run { [weak self] in
+            self?.startEnemyIdleAnimation()
+        }
+        
+        enemy.run(SKAction.sequence([attackGroup, returnToIdle]), withKey: "enemyAttackAnimation")
+    }
  }

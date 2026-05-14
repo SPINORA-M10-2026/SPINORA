@@ -20,6 +20,7 @@ extension GameScene {
     // 1. Setup the physical sprite only once
     private func setupPlayerSprite() {
         let playerSprite = SKSpriteNode(imageNamed: "Idle 1")
+        playerSprite.name = "playerSprite" // Assign a name so we can find it for hit/attack effects
         playerSprite.name = "playerSprite" // Assign a name so we can find it anywhere
         playerSprite.position = CGPoint(x: frame.minX + 60, y: frame.maxY - 350)
         playerSprite.size = CGSize(width: 100, height: 100)
@@ -66,11 +67,11 @@ extension GameScene {
         
         // Load attack frames
         let attackFrames = (1...5).map { SKTexture(imageNamed: "Attack \($0)") }
-        let animateAction = SKAction.animate(with: attackFrames, timePerFrame: 0.1)
+        let animateAction = SKAction.animate(with: attackFrames, timePerFrame: 0.12)
         
         // Add slight forward/backward movement for impact
         let moveForward = SKAction.moveBy(x: 5, y: 0, duration: 0.3)
-        let moveBack = SKAction.moveBy(x: -5, y: 0, duration: 0.2)
+        let moveBack = SKAction.moveBy(x: -5, y: 0, duration: 0.3)
         let moveSequence = SKAction.sequence([moveForward, moveBack])
         
         // Group animation and movement to run simultaneously
@@ -115,3 +116,4 @@ extension GameScene {
         return textures
     }
 }
+
