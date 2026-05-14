@@ -60,6 +60,7 @@ class GameViewModel {
     var onRewardReady: (() -> Void)?
     var onPlayerAttackVisual: (() -> Void)?
     var onPlayerDefeatVisual: (() -> Void)?
+    var onEnemyHitVisual: (() -> Void)?
     
     // MARK: - Initialization
     init() {
@@ -156,6 +157,7 @@ class GameViewModel {
         )
         
         enemy.takeDamage(damage)
+        onEnemyHitVisual?()
         onStatsUpdated?()
         onMessage?("Player dealt \(damage) damage!")
         
@@ -277,3 +279,4 @@ class GameViewModel {
         try? context.save()
     }
 }
+

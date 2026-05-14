@@ -65,17 +65,17 @@ extension GameScene {
         player.removeAction(forKey: "idleAnimation")
         
         // Load attack frames
-        let attackFrames = [SKTexture(imageNamed: "Attack 1"), SKTexture(imageNamed: "Attack 2"), SKTexture(imageNamed: "Attack 3"), SKTexture(imageNamed: "Attack 4"), SKTexture(imageNamed: "Attack 5")]
+        let attackFrames = (1...5).map { SKTexture(imageNamed: "Attack \($0)") }
         let animateAction = SKAction.animate(with: attackFrames, timePerFrame: 0.1)
         
         // Add slight forward/backward movement for impact
-//        let moveForward = SKAction.moveBy(x: 30, y: 0, duration: 0.1)
-//        let moveBack = SKAction.moveBy(x: -30, y: 0, duration: 0.1)
-//        let moveSequence = SKAction.sequence([moveForward, moveBack])
+        let moveForward = SKAction.moveBy(x: 5, y: 0, duration: 0.3)
+        let moveBack = SKAction.moveBy(x: -5, y: 0, duration: 0.2)
+        let moveSequence = SKAction.sequence([moveForward, moveBack])
         
         // Group animation and movement to run simultaneously
-        let attackGroup = SKAction.group([animateAction])
-//        let attackGroup = SKAction.group([animateAction, moveSequence])
+//        let attackGroup = SKAction.group([animateAction])
+        let attackGroup = SKAction.group([animateAction, moveSequence])
         
         // Return to idle after attacking
         let returnToIdle = SKAction.run { [weak self] in
@@ -92,7 +92,7 @@ extension GameScene {
         player.removeAllActions()
         
         // Load defeat frames
-        let deadFrames = [SKTexture(imageNamed: "Dead 1"), SKTexture(imageNamed: "Dead 2")]
+        let deadFrames = (1...7).map { SKTexture(imageNamed: "Dead \($0)") }
         let animateAction = SKAction.animate(with: deadFrames, timePerFrame: 0.15, resize: false, restore: false)
         
         // Add fall over rotation effect

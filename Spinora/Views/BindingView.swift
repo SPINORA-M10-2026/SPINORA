@@ -48,6 +48,11 @@ extension GameScene {
             self?.messageLabel.fontColor = .red
         }
         
+        // Listen for Enemy hit visual (set once)
+        viewModel.onEnemyHitVisual = { [weak self] in
+            self?.playEnemyHitEffect()
+        }
+        
         // Stats update binding
         viewModel.onStatsUpdated = { [weak self] in
             guard let self = self, let vm = self.viewModel else { return }
@@ -117,3 +122,4 @@ extension GameScene {
         }
     }
 }
+
