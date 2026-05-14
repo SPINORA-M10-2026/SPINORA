@@ -31,6 +31,7 @@ class GameScene: SKScene {
     
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.15, green: 0.15, blue: 0.2, alpha: 1.0)
+//        self.viewModel = GameViewModel()
         
         // Fungsi ini sekarang berada di file extension
         setupUI()

@@ -11,25 +11,21 @@ import SpriteKit
 extension GameScene {
     
     func bindViewModel() {
+        // Update slot UI when slots change
         viewModel.onSlotsUpdated = { [weak self] animatedIndices in
             guard let self = self else { return }
             
             for (index, slot) in self.viewModel.slotsPresentation.enumerated() {
-                
-                // 2. CEK apakah slot ini ada di daftar yang harus dianimasikan
+                // Animate only the indices requested, otherwise update directly
                 if animatedIndices.contains(index) {
-                    // Jika ya, jalankan animasi spin
                     self.animateSpin(for: index, finalEmoji: slot.emoji)
                 } else {
-                    // Jika tidak, cukup pastikan teks emojinya benar tanpa animasi
                     self.slotElementLabels[index].text = slot.emoji
                 }
                 
-                // Update visual tombol REROLL
-                // (Catatan: perhatikan penambahan as? SKShapeNode agar aman)
+                // Update reroll button visual state
                 if let btn = self.rerollButtons[index] as? SKShapeNode,
                    let label = btn.children.first as? SKLabelNode {
-                    
                     if slot.isMaxed {
                         btn.fillColor = .gray
                     } else {
@@ -40,38 +36,22 @@ extension GameScene {
             }
         }
         
-//        viewModel.onSlotsUpdated = { [weak self] in
-//            guard let self = self else { return }
-//            for (index, slot) in self.viewModel.slotsPresentation.enumerated() {
-////                self.slotElementLabels[index].text = slot.emoji
-//                self.animateSpin(for: index, finalEmoji: slot.emoji)
-//                
-//                if let btn = self.rerollButtons[index] as SKShapeNode?,
-//                   let label = btn.children.first as? SKLabelNode {
-//                    
-//                    if slot.isMaxed {
-//                        btn.fillColor = .gray
-//                    } else {
-//                        btn.fillColor = SKColor(red: 0.8, green: 0.3, blue: 0.2, alpha: 1.0)
-//                    }
-//                    label.text = slot.buttonText
-//                }
-//                
-////                if let btn = self.rerollButtons[index] as SKShapeNode?,
-////                   let label = btn.children.first as? SKLabelNode {
-////                    
-////                    if slot.isMaxed {
-////                        btn.fillColor = .gray
-////                    } else {
-////                        btn.fillColor = SKColor(red: 0.8, green: 0.3, blue: 0.2, alpha: 1.0)
-////                    }
-////                    label.text = slot.buttonText
-////                }
-//            }
-//        }
+        // Listen for Attack visual signal (set once)
+        viewModel.onPlayerAttackVisual = { [weak self] in
+            self?.playPlayerAttackAnimation()
+        }
         
+        // Listen for Defeat visual signal (set once)
+        viewModel.onPlayerDefeatVisual = { [weak self] in
+            self?.playPlayerDefeatAnimation()
+            self?.messageLabel.text = "YOU LOSE!"
+            self?.messageLabel.fontColor = .red
+        }
+        
+        // Stats update binding
         viewModel.onStatsUpdated = { [weak self] in
             guard let self = self, let vm = self.viewModel else { return }
+            
             self.playerAtkLabel.text = "⚔️ ATK: \(vm.player.baseAttack)"
             self.playerHpLabel.text = "❤️ HP: \(vm.player.hp)"
             self.enemyHpLabel.text = "HP: \(vm.enemy.hp) ❤️"
@@ -79,40 +59,47 @@ extension GameScene {
             self.stageLabel.text = "STAGE \(vm.currentStage)"
         }
         
+        // Message binding
         viewModel.onMessage = { [weak self] msg in
             self?.messageLabel.text = msg
             self?.messageLabel.setScale(1.5)
             self?.messageLabel.run(SKAction.scale(to: 1.0, duration: 0.3))
         }
         
+        // Reward ready binding
         viewModel.onRewardReady = { [weak self] in
             guard let self = self else { return }
+            
             if let atkLabel = self.rewardAtkBtn.children.first as? SKLabelNode {
                 atkLabel.text = self.viewModel.rewardAtkText
             }
             if let hpLabel = self.rewardHpBtn.children.first as? SKLabelNode {
                 hpLabel.text = self.viewModel.rewardHpText
             }
+            
             self.messageLabel.text = "Pilih Bonus Gacha!"
         }
         
+        // State change -> update button visibility
         viewModel.onStateChanged = { [weak self] state in
             self?.updateButtonVisibility(for: state)
         }
         
+        // Initial state setups (called once, outside any callback to avoid recursion)
         viewModel.onStatsUpdated?()
-//        viewModel.onSlotsUpdated?()
         viewModel.onSlotsUpdated?([])
         updateButtonVisibility(for: viewModel.state)
     }
     
     func updateButtonVisibility(for state: GameState) {
+        // Reset all button visibilities
         spinButton.alpha = 0.0
         attackButton.alpha = 0.0
         rerollButtons.forEach { $0.alpha = 0.0 }
         rewardAtkBtn.alpha = 0.0
         rewardHpBtn.alpha = 0.0
         
+        // Set visibility based on the current game state
         switch state {
         case .idle:
             spinButton.alpha = 1.0
