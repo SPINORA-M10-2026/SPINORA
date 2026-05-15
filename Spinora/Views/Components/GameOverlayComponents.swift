@@ -5,12 +5,6 @@
 //  Created by Stanley Young on 15/05/26.
 //
 
-
-//
-//  GameOverlayComponents.swift
-//  Spinora
-//
-
 import SwiftUI
 
 struct RibbonBanner: View {

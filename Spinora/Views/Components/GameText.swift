@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct PixelText: View {
+struct GamePixelText: View {
     let text: String
     let size: CGFloat
 
-    init(_ text: String, size: CGFloat = 24) {
+    init(_ text: String, size: CGFloat) {
         self.text = text
         self.size = size
     }
@@ -20,6 +20,7 @@ struct PixelText: View {
         Text(text)
             .font(.system(size: size, weight: .heavy, design: .monospaced))
             .textCase(.uppercase)
-            .shadow(color: GameColor.woodDark, radius: 0, x: 3, y: 3)
+            .foregroundStyle(.white)
+            .shadow(color: GameColor.woodDark, radius: 0, x: 2, y: 2)
     }
 }

@@ -2,6 +2,8 @@
 //  BattleLayoutData.swift
 //  Spinora
 //
+//  Created by Stanley Young on 15/05/26.
+//
 
 import Foundation
 
@@ -17,9 +19,6 @@ struct BattleLayoutData {
 
     var rerollText: String
     var reelColumns: [[String]]
-    var reelRolledThisTurn: [Bool]
-
-    var canAttack: Bool
 
     static let preview = BattleLayoutData(
         waveText: "001",
@@ -33,8 +32,6 @@ struct BattleLayoutData {
             ["💧", "🔥", "🔥"],
             ["🔥", "💧", "🪨"],
             ["🪨", "🪨", "💧"]
-        ],
-        reelRolledThisTurn: [false, false, false],
-        canAttack: true
+        ]
     )
 }
