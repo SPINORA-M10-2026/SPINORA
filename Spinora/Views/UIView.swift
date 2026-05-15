@@ -12,7 +12,7 @@ extension GameScene {
     
     func setupUI() {
         let safeAreaTop = frame.maxY - 80
-        let safeAreaBottom = frame.minY + 100
+        _ = frame.minY + 100
         
         stageLabel = createLabel(text: "STAGE 1", fontSize: 24, pos: CGPoint(x: frame.minX + 80, y: safeAreaTop), parentNode: self)
         stageLabel.fontName = "HelveticaNeue-CondensedBlack"

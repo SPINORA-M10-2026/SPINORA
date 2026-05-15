@@ -10,7 +10,7 @@ import SpriteKit
 
 extension GameScene {
     func buttonAttackView () {
-        let safeAreaTop = frame.maxY - 80
+        _ = frame.maxY - 80
         let safeAreaBottom = frame.minY + 100
         
         spinButton = createButton(text: "SPIN ALL", color: SKColor(red: 0.2, green: 0.6, blue: 0.3, alpha: 1.0), pos: CGPoint(x: frame.midX, y: safeAreaBottom + 50), name: "spin")

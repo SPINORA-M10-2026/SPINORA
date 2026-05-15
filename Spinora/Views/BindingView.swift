@@ -24,8 +24,8 @@ extension GameScene {
                 }
                 
                 // Update reroll button visual state
-                if let btn = self.rerollButtons[index] as? SKShapeNode,
-                   let label = btn.children.first as? SKLabelNode {
+                let btn = self.rerollButtons[index]
+                if let label = btn.children.first as? SKLabelNode {
                     if slot.isMaxed {
                         btn.fillColor = .gray
                     } else {

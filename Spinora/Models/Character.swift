@@ -1,30 +1,51 @@
-//
-//  Character.swift
-//  SPINORA
-//
-//  Created by oky faishal on 12/05/26.
-//
-
 import Foundation
+import SwiftData
+
+// MARK: - Character (gameplay value type, digunakan GameViewModel)
 
 struct Character {
     var hp: Int
     var maxHp: Int
     var baseAttack: Int
-    
-    // Status elemen untuk musuh (Pemain tidak memiliki elemen statis karena dari Slot)
     var element: Element?
-    
-    // Fungsi bantuan untuk logika darah
+
+    var isDead: Bool { hp <= 0 }
+
     mutating func takeDamage(_ amount: Int) {
-        self.hp = max(0, self.hp - amount) // HP tidak bisa di bawah 0
+        hp = max(0, hp - amount)
     }
-    
-    mutating func heal(_ amount: Int) {
-        self.hp = min(self.maxHp, self.hp + amount) // HP tidak bisa melebihi Max HP
-    }
-    
-    var isDead: Bool {
-        return self.hp <= 0
+}
+
+// MARK: - Player (SwiftData persistence, menyimpan statistik antar-run)
+
+@Model
+final class Player {
+    @Attribute(.unique) var id: UUID
+    var name: String
+    var totalRuns: Int
+    var bestWave: Int
+    var totalEnemiesDefeated: Int
+    var createdAt: Date
+
+    @Relationship(deleteRule: .cascade) var settings: GameSettings?
+    @Relationship(deleteRule: .cascade) var savedRuns: [SavedRun]
+    @Relationship(deleteRule: .cascade) var runHistories: [RunHistory]
+
+    init(
+        id: UUID = UUID(),
+        name: String = "Player",
+        totalRuns: Int = 0,
+        bestWave: Int = 0,
+        totalEnemiesDefeated: Int = 0,
+        createdAt: Date = .now
+    ) {
+        self.id = id
+        self.name = name
+        self.totalRuns = totalRuns
+        self.bestWave = bestWave
+        self.totalEnemiesDefeated = totalEnemiesDefeated
+        self.createdAt = createdAt
+        self.savedRuns = []
+        self.runHistories = []
     }
 }
