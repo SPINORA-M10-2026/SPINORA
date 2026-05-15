@@ -41,4 +41,15 @@ enum Element: String, CaseIterable, Identifiable {
     func weakAgainst(_ other: Element) -> Bool {
         other.beats(self)
     }
+    
+    func damageMultiplier(against enemyElement: Element) -> Double {
+        if self == enemyElement { return 1.0 }
+        
+        switch (self, enemyElement) {
+        case (.water, .fire), (.fire, .earth), (.fire, .water):
+            return 2.0 // Super Effective
+        default:
+            return 0.5 // Not Effective
+        }
+    }
 }
