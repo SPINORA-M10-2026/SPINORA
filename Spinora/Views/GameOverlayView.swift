@@ -5,12 +5,6 @@
 //  Created by Stanley Young on 15/05/26.
 //
 
-
-//
-//  GameOverlayView.swift
-//  Spinora
-//
-
 import SwiftUI
 
 enum GameOverlayType {
@@ -161,7 +155,7 @@ private struct PauseOverlay: View {
             }
             .padding(.horizontal, 34)
             .padding(.vertical, 48)
-            .background(GameColor.parchment)
+            .background(GameColor.wood)
             .clipShape(RoundedRectangle(cornerRadius: 30))
             .overlay(
                 RoundedRectangle(cornerRadius: 30)
@@ -207,7 +201,7 @@ private struct ConfirmationOverlay: View {
             }
             .padding(.horizontal, 32)
             .padding(.vertical, 48)
-            .background(GameColor.parchment)
+            .background(GameColor.wood)
             .clipShape(RoundedRectangle(cornerRadius: 30))
             .overlay(
                 RoundedRectangle(cornerRadius: 30)

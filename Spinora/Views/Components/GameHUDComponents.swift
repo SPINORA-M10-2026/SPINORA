@@ -7,56 +7,79 @@
 
 import SwiftUI
 
-struct TopHUD: View {
-    let onPauseTap: () -> Void
-
+struct HUDLayout: View {
     var body: some View {
-        HStack {
-            HStack(spacing: 12) {
-                StarBadge()
+        ZStack {
+            // Device notch placeholder
+            AssetSlot(
+                "device_notch",
+                fill: .black,
+                cornerRadius: 36,
+                showLabel: false
+            )
+            .frame(width: 260, height: 76)
+            .position(x: 416, y: 70)
 
-                VStack(alignment: .leading, spacing: 0) {
-                    PixelText("Wave", size: 22)
-                        .foregroundStyle(.white)
+            // Wave icon placeholder
+            AssetSlot(
+                "wave_icon",
+                fill: GameColor.buttonYellow.opacity(0.9),
+                cornerRadius: 18
+            )
+            .frame(width: 95, height: 95)
+            .position(x: 96, y: 165)
 
-                    PixelText("001", size: 36)
-                        .foregroundStyle(.white)
-                }
+            // Wave text
+            VStack(alignment: .leading, spacing: 0) {
+                GamePixelText("Wave", size: 28)
+                GamePixelText("001", size: 44)
             }
+            .position(x: 202, y: 174)
 
-            Spacer()
-
-            Button(action: onPauseTap) {
-                RoundedRectangle(cornerRadius: 18)
-                    .fill(GameColor.wood)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 18)
-                            .stroke(Color.orange.opacity(0.35), lineWidth: 3)
-                    )
-                    .overlay(
-                        PixelText("Ⅱ", size: 36)
-                            .foregroundStyle(GameColor.parchmentLight)
-                    )
-                    .frame(width: 88, height: 88)
+            // Pause button placeholder
+            Button {
+                print("Pause tapped")
+            } label: {
+                AssetSlot(
+                    "pause_button",
+                    fill: GameColor.wood,
+                    cornerRadius: 20,
+                    showLabel: false
+                )
+                .overlay(
+                    GamePixelText("Ⅱ", size: 42)
+                        .foregroundStyle(Color(red: 1.0, green: 0.76, blue: 0.45))
+                )
             }
+            .buttonStyle(.plain)
+            .frame(width: 88, height: 88)
+            .position(x: 742, y: 165)
         }
-        .padding(.horizontal, 40)
-        .padding(.top, 130)
-        .frame(height: 245)
     }
 }
 
-struct StarBadge: View {
+struct TopFrameLayout: View {
     var body: some View {
         ZStack {
-            Image(systemName: "star.fill")
-                .font(.system(size: 76))
-                .foregroundStyle(GameColor.yellow)
-                .shadow(color: GameColor.woodDark, radius: 0, x: 5, y: 5)
+            // Top frame asset slot
+            AssetSlot(
+                "top_frame",
+                fill: GameColor.wood,
+                cornerRadius: 0,
+                showLabel: false
+            )
+            .frame(width: 832, height: 330)
+            .position(x: 416, y: 165)
 
-            Image(systemName: "star")
-                .font(.system(size: 76))
-                .foregroundStyle(GameColor.wood)
+            // Decorative lower edge slot
+            AssetSlot(
+                "top_frame_bottom_curve",
+                fill: GameColor.woodDark,
+                cornerRadius: 0,
+                showLabel: false
+            )
+            .frame(width: 832, height: 36)
+            .position(x: 416, y: 322)
         }
     }
 }
