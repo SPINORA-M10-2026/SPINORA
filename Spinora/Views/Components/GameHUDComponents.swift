@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct HUDLayout: View {
+    let waveText: String
+    let onPauseTap: () -> Void
+
     var body: some View {
         ZStack {
-            // Device notch placeholder
             AssetSlot(
                 "device_notch",
                 fill: .black,
@@ -20,7 +22,6 @@ struct HUDLayout: View {
             .frame(width: 260, height: 76)
             .position(x: 416, y: 70)
 
-            // Wave icon placeholder
             AssetSlot(
                 "wave_icon",
                 fill: GameColor.buttonYellow.opacity(0.9),
@@ -29,17 +30,13 @@ struct HUDLayout: View {
             .frame(width: 95, height: 95)
             .position(x: 96, y: 165)
 
-            // Wave text
             VStack(alignment: .leading, spacing: 0) {
                 GamePixelText("Wave", size: 28)
-                GamePixelText("001", size: 44)
+                GamePixelText(waveText, size: 44)
             }
             .position(x: 202, y: 174)
 
-            // Pause button placeholder
-            Button {
-                print("Pause tapped")
-            } label: {
+            Button(action: onPauseTap) {
                 AssetSlot(
                     "pause_button",
                     fill: GameColor.wood,
@@ -61,7 +58,6 @@ struct HUDLayout: View {
 struct TopFrameLayout: View {
     var body: some View {
         ZStack {
-            // Top frame asset slot
             AssetSlot(
                 "top_frame",
                 fill: GameColor.wood,
@@ -71,7 +67,6 @@ struct TopFrameLayout: View {
             .frame(width: 832, height: 330)
             .position(x: 416, y: 165)
 
-            // Decorative lower edge slot
             AssetSlot(
                 "top_frame_bottom_curve",
                 fill: GameColor.woodDark,
