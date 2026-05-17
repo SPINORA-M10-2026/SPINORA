@@ -19,6 +19,10 @@ struct BattleLayoutData {
 
     var rerollText: String
     var reelColumns: [[String]]
+    var reelRolledThisTurn: [Bool]
+    var lastRolledIndex: Int?
+
+    var canAttack: Bool
 
     static let preview = BattleLayoutData(
         waveText: "001",
@@ -32,6 +36,9 @@ struct BattleLayoutData {
             ["💧", "🔥", "🔥"],
             ["🔥", "💧", "🪨"],
             ["🪨", "🪨", "💧"]
-        ]
+        ],
+        reelRolledThisTurn: [false, false, false],
+        lastRolledIndex: nil,
+        canAttack: true
     )
 }
