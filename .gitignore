@@ -1,0 +1,65 @@
+# ==========================================
+# Apple / macOS
+# ==========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# ==========================================
+# Xcode
+# ==========================================
+# Build folder dan cache
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# File spesifik milik user (Wajib di-ignore agar tidak bentrok dengan tim)
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.xcuserData
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# Pastikan file project BUKAN milik user tetap ter-track
+!default.pbxuser
+!default.mode1v3
+!default.mode2v3
+!default.perspectivev3
+
+# ==========================================
+# Swift Package Manager (SPM)
+# ==========================================
+.build/
+.swiftpm/
+# (Package.resolved biasanya dibiarkan ter-track agar versi library sama di semua komputer tim)
+
+# ==========================================
+# CocoaPods (Jika suatu saat kamu pakai)
+# ==========================================
+Pods/
+
+# ==========================================
+# Fastlane (Jika pakai untuk build otomatis)
+# ==========================================
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# ==========================================
+# IDE Lain / Editor (VS Code dll)
+# ==========================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

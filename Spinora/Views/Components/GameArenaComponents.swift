@@ -48,13 +48,14 @@ struct ArenaLayout: View {
             .frame(width: 120, height: 24)
             .position(x: 690, y: 627)
 
-            AssetSlot(
-                "player_idle",
-                fill: Color.blue.opacity(0.18),
-                cornerRadius: 16
-            )
-            .frame(width: 165, height: 205)
-            .position(x: 112, y: 860)
+            PlayerSpriteView()
+                .frame(width: 165, height: 205)
+                .position(x: 112, y: 860)
+            
+            // sample attack
+//            PlayerSpriteView(state: .attack)
+//                .frame(width: 165, height: 205)
+//                .position(x: 112, y: 860)
 
             AssetSlot(
                 "player_shadow",
@@ -138,3 +139,4 @@ struct AttackStatSlot: View {
         }
     }
 }
+
