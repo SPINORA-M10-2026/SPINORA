@@ -43,13 +43,16 @@ enum Element: String, CaseIterable, Identifiable {
     }
     
     func damageMultiplier(against enemyElement: Element) -> Double {
-        if self == enemyElement { return 1.0 }
-        
-        switch (self, enemyElement) {
-        case (.water, .fire), (.fire, .earth), (.fire, .water):
-            return 2.0 // Super Effective
-        default:
-            return 0.5 // Not Effective
+        if self == enemyElement {
+            return 1.0
         }
-    }
-}
+
+        switch (self, enemyElement) {
+        case (.water, .fire),
+             (.fire, .earth),
+             (.earth, .water):
+            return 2.0
+        default:
+            return 0.5
+        }
+    }}
