@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct BottomButtonLayout: View {
+    let canAttack: Bool
+    let onAttackTap: () -> Void
+
     var body: some View {
         ZStack {
-            Button {
-                print("Attack tapped")
-            } label: {
-                AttackButtonSlot()
+            Button(action: onAttackTap) {
+                AttackButtonSlot(isEnabled: canAttack)
             }
             .buttonStyle(.plain)
+            .disabled(!canAttack)
             .frame(width: 245, height: 105)
             .position(x: 685, y: 1035)
         }
@@ -23,11 +25,13 @@ struct BottomButtonLayout: View {
 }
 
 struct AttackButtonSlot: View {
+    let isEnabled: Bool
+
     var body: some View {
         ZStack {
             AssetSlot(
                 "attack_button",
-                fill: GameColor.buttonYellow,
+                fill: isEnabled ? GameColor.buttonYellow : Color.gray,
                 cornerRadius: 16,
                 showLabel: false
             )
@@ -42,5 +46,6 @@ struct AttackButtonSlot: View {
                 GamePixelText("ATTACK", size: 27)
             }
         }
+        .opacity(isEnabled ? 1.0 : 0.55)
     }
 }

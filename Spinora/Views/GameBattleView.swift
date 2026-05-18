@@ -8,6 +8,13 @@
 import SwiftUI
 
 struct GameBattleView: View {
+    let data: BattleLayoutData
+
+    let onPauseTap: () -> Void
+    let onAttackTap: () -> Void
+    let onGuidebookTap: () -> Void
+    let onReelTap: (Int) -> Void
+
     private let designWidth: CGFloat = 832
     private let designHeight: CGFloat = 1800
 
@@ -45,11 +52,29 @@ struct GameBattleView: View {
     private var gameCanvas: some View {
         ZStack {
             TopFrameLayout()
-            ArenaLayout()
+
+            ArenaLayout(data: data)
+
             BottomFrameLayout()
-            ReelLayout()
-            BottomButtonLayout()
-            HUDLayout()
+
+            ReelLayout(
+                rerollText: data.rerollText,
+                reelColumns: data.reelColumns,
+                reelRolledThisTurn: data.reelRolledThisTurn,
+                lastRolledIndex: data.lastRolledIndex,
+                onGuidebookTap: onGuidebookTap,
+                onReelTap: onReelTap
+            )
+
+            BottomButtonLayout(
+                canAttack: data.canAttack,
+                onAttackTap: onAttackTap
+            )
+
+            HUDLayout(
+                waveText: data.waveText,
+                onPauseTap: onPauseTap
+            )
         }
         .frame(width: designWidth, height: designHeight)
         .clipped()
