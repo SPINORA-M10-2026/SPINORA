@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ArenaLayout: View {
     let data: BattleLayoutData
+    var playerState: PlayerAnimationState = .idle
+    var enemyAppearance: EnemyAppearance? = nil
 
     var body: some View {
         ZStack {
@@ -31,13 +33,19 @@ struct ArenaLayout: View {
             .frame(width: 270, height: 30)
             .position(x: 445, y: 455)
 
-            AssetSlot(
-                "enemy_idle",
-                fill: Color.purple.opacity(0.18),
-                cornerRadius: 16
-            )
-            .frame(width: 175, height: 175)
-            .position(x: 690, y: 525)
+            if let appearance = enemyAppearance {
+                EnemySpriteView(appearance: appearance)
+                    .frame(width: 175, height: 175)
+                    .position(x: 690, y: 525)
+            } else {
+                AssetSlot(
+                    "enemy_idle",
+                    fill: Color.purple.opacity(0.18),
+                    cornerRadius: 16
+                )
+                .frame(width: 175, height: 175)
+                .position(x: 690, y: 525)
+            }
 
             AssetSlot(
                 "enemy_shadow",
@@ -48,14 +56,9 @@ struct ArenaLayout: View {
             .frame(width: 120, height: 24)
             .position(x: 690, y: 627)
 
-            PlayerSpriteView()
+            PlayerSpriteView(state: playerState)
                 .frame(width: 165, height: 205)
                 .position(x: 112, y: 860)
-            
-            // sample attack
-//            PlayerSpriteView(state: .attack)
-//                .frame(width: 165, height: 205)
-//                .position(x: 112, y: 860)
 
             AssetSlot(
                 "player_shadow",

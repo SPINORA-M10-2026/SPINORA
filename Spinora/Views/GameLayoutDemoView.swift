@@ -14,6 +14,8 @@ struct GameLayoutDemoView: View {
         ZStack {
             GameBattleView(
                 data: viewModel.layoutData,
+                playerState: viewModel.playerAnimationState,
+                enemyAppearance: viewModel.enemyAppearance,
                 onPauseTap: {
                     viewModel.showPause()
                 },

@@ -38,10 +38,11 @@ struct FrameAnimatedSprite: View {
         return max(0.01, duration / Double(count))
     }
 
+    @State private var startTime: Date = .now
+
     var body: some View {
-        TimelineView(.periodic(from: .now, by: step)) { context in
+        TimelineView(.periodic(from: startTime, by: step)) { context in
             if frames.isEmpty {
-                // fallback image if frames array is empty
                 Image(systemName: "photo.badge.exclamationmark")
                     .resizable()
                     .scaledToFit()
@@ -49,15 +50,10 @@ struct FrameAnimatedSprite: View {
                     .cornerRadius(cornerRadius)
             } else {
                 let count = frames.count
-                let elapsed = context.date.timeIntervalSinceReferenceDate
-                
-                // calculate raw index based on elapsed time
+                let elapsed = max(0, context.date.timeIntervalSince(startTime))
                 let rawIndex = Int((elapsed / step).rounded(.down))
-                
-                // determine actual frame index
                 let frameIndex = repeats ? (rawIndex % count) : min(rawIndex, count - 1)
 
-                // render current frame image
                 Image(frames[frameIndex])
                     .resizable()
                     .scaledToFit()
@@ -89,30 +85,33 @@ struct PlayerSpriteView: View {
     }
 
     var body: some View {
-        switch state {
-        case .idle:
-            FrameAnimatedSprite(
-                frames: idleFrames,
-                duration: 0.8,
-                repeats: true,
-                cornerRadius: 16
-            )
+        Group {
+            switch state {
+            case .idle:
+                FrameAnimatedSprite(
+                    frames: idleFrames,
+                    duration: 0.8,
+                    repeats: true,
+                    cornerRadius: 16
+                )
 
-        case .attack:
-            FrameAnimatedSprite(
-                frames: attackFrames,
-                duration: 0.6,
-                repeats: true, // default false
-                cornerRadius: 16
-            )
+            case .attack:
+                FrameAnimatedSprite(
+                    frames: attackFrames,
+                    duration: 0.6,
+                    repeats: false,
+                    cornerRadius: 16
+                )
 
-        case .dead:
-            FrameAnimatedSprite(
-                frames: deadFrames,
-                duration: 1.2,
-                repeats: false, // default false
-                cornerRadius: 16
-            )
+            case .dead:
+                FrameAnimatedSprite(
+                    frames: deadFrames,
+                    duration: 1.2,
+                    repeats: false,
+                    cornerRadius: 16
+                )
+            }
         }
+        .id(state)
     }
 }

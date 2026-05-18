@@ -13,6 +13,8 @@ final class GameLayoutViewModel: ObservableObject {
     @Published var layoutData: BattleLayoutData = .preview
     @Published var overlay: GameOverlayType? = nil
     @Published var confirmAction: ConfirmAction? = nil
+    @Published var playerAnimationState: PlayerAnimationState = .idle
+    @Published var enemyAppearance: EnemyAppearance = EnemyAppearance.random()
 
     private let reelManager = ReelManager()
 
@@ -140,12 +142,13 @@ final class GameLayoutViewModel: ObservableObject {
     // MARK: - Attack
 
     func attack() {
-        guard layoutData.canAttack else {
-            return
-        }
+        guard layoutData.canAttack else { return }
+        guard overlay == nil else { return }
 
-        guard overlay == nil else {
-            return
+        playerAnimationState = .attack
+        Task {
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            playerAnimationState = .idle
         }
 
         layoutData.enemyHP = max(0, layoutData.enemyHP - attackDamage)
@@ -233,6 +236,7 @@ final class GameLayoutViewModel: ObservableObject {
 
         layoutData.waveText = String(format: "%03d", nextWave)
         layoutData.enemyHP = layoutData.enemyMaxHP
+        enemyAppearance = EnemyAppearance.random()
 
         overlay = nil
         confirmAction = nil
@@ -255,6 +259,7 @@ final class GameLayoutViewModel: ObservableObject {
         symbols = [.water, .fire, .earth]
         rolledThisTurn = [false, false, false]
         isRolling = false
+        enemyAppearance = EnemyAppearance.random()
 
         currentReelColumns = [
             ["💧", "🔥", "🔥"],
