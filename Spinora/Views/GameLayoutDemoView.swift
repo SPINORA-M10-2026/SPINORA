@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GameLayoutDemoView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel = GameLayoutViewModel()
 
     var body: some View {
@@ -56,9 +58,14 @@ struct GameLayoutDemoView: View {
                 )
             }
         }
+        .task {
+            viewModel.configurePersistenceIfNeeded(modelContext: modelContext)
+            viewModel.loadSavedRunIfAvailable()
+        }
     }
 }
 
 #Preview {
     GameLayoutDemoView()
+        .modelContainer(AppModelContainer.shared)
 }
