@@ -13,22 +13,15 @@ struct HUDLayout: View {
 
     var body: some View {
         ZStack {
-            AssetSlot(
-                "device_notch",
-                fill: .black,
-                cornerRadius: 36,
-                showLabel: false
-            )
-            .frame(width: 260, height: 76)
-            .position(x: 416, y: 70)
-
-            AssetSlot(
-                "wave_icon",
-                fill: GameColor.buttonYellow.opacity(0.9),
-                cornerRadius: 18
-            )
-            .frame(width: 95, height: 95)
-            .position(x: 96, y: 165)
+            
+            // icon wave / level
+            Image("icon_wave")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 105, height: 105)
+//                .background(GameColor.buttonYellow.opacity(0.9))
+                .cornerRadius(18)
+                .position(x: 96, y: 165)
 
             VStack(alignment: .leading, spacing: 0) {
                 GamePixelText("Wave", size: 28)
@@ -36,17 +29,12 @@ struct HUDLayout: View {
             }
             .position(x: 202, y: 174)
 
+            // icon / button pause
             Button(action: onPauseTap) {
-                AssetSlot(
-                    "pause_button",
-                    fill: GameColor.wood,
-                    cornerRadius: 20,
-                    showLabel: false
-                )
-                .overlay(
-                    GamePixelText("Ⅱ", size: 42)
-                        .foregroundStyle(Color(red: 1.0, green: 0.76, blue: 0.45))
-                )
+                Image("button_pause")
+                    .resizable()
+                    .scaledToFit()
+                    .cornerRadius(20)
             }
             .buttonStyle(.plain)
             .frame(width: 88, height: 88)
@@ -55,26 +43,25 @@ struct HUDLayout: View {
     }
 }
 
+
+// main frame (header, box slot, dll)
 struct TopFrameLayout: View {
     var body: some View {
         ZStack {
-            AssetSlot(
-                "top_frame",
-                fill: GameColor.wood,
-                cornerRadius: 0,
-                showLabel: false
-            )
-            .frame(width: 832, height: 330)
-            .position(x: 416, y: 165)
-
-            AssetSlot(
-                "top_frame_bottom_curve",
-                fill: GameColor.woodDark,
-                cornerRadius: 0,
-                showLabel: false
-            )
-            .frame(width: 832, height: 36)
-            .position(x: 416, y: 322)
+            // backround map
+            Image("background_environment")
+                .resizable()
+                .frame(width: 832, height: 1150)
+                .position(x: 416, y: 715)
+                .zIndex(5)
+            
+            // backround top & bottom bar (wood)
+            Image("background_wood")
+                .resizable()
+                .scaledToFill()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
+                .zIndex(10)
         }
     }
 }

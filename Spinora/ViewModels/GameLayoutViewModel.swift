@@ -34,9 +34,9 @@ final class GameLayoutViewModel: ObservableObject {
     private var isRolling: Bool = false
 
     private var currentReelColumns: [[String]] = [
-        ["💧", "🔥", "🔥"],
-        ["🔥", "💧", "🪨"],
-        ["🪨", "🪨", "💧"]
+        ["water", "fire", "fire"],
+        ["fire", "water", "earth"],
+        ["earth", "earth", "water"]
     ]
 
     private let maxRollsPerTurn = 3

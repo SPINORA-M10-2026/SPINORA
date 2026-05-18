@@ -10,9 +10,9 @@ import SpriteKit
 final class ReelGameScene: SKScene {
 
     private var reelColumns: [[String]] = [
-        ["💧", "🔥", "🔥"],
-        ["🔥", "💧", "🪨"],
-        ["🪨", "🪨", "💧"]
+        ["water", "fire", "fire"],
+        ["fire", "water", "earth"],
+        ["earth", "earth", "water"]
     ]
 
     private var reelRolledThisTurn: [Bool] = [false, false, false]
@@ -22,9 +22,9 @@ final class ReelGameScene: SKScene {
     private var panelNode = SKShapeNode()
 
     private var reelNodes: [SKShapeNode] = []
-    private var topLabels: [SKLabelNode] = []
-    private var centerLabels: [SKLabelNode] = []
-    private var bottomLabels: [SKLabelNode] = []
+    private var topSymbols: [SKSpriteNode] = []
+    private var centerSymbols: [SKSpriteNode] = []
+    private var bottomSymbols: [SKSpriteNode] = []
 
     override func didMove(to view: SKView) {
         backgroundColor = .clear
@@ -62,9 +62,9 @@ final class ReelGameScene: SKScene {
         self.reelColumns = reelColumns
         self.reelRolledThisTurn = reelRolledThisTurn
 
-        guard topLabels.count == 3,
-              centerLabels.count == 3,
-              bottomLabels.count == 3,
+        guard topSymbols.count == 3,
+              centerSymbols.count == 3,
+              bottomSymbols.count == 3,
               reelNodes.count == 3 else {
             return
         }
@@ -86,17 +86,17 @@ final class ReelGameScene: SKScene {
                     finalBottom: symbols[2]
                 )
             } else {
-                topLabels[index].text = symbols[0]
-                centerLabels[index].text = symbols[1]
-                bottomLabels[index].text = symbols[2]
+                topSymbols[index].texture = SKTexture(imageNamed: "icon_element_\(symbols[0])")
+                centerSymbols[index].texture = SKTexture(imageNamed: "icon_element_\(symbols[1])")
+                bottomSymbols[index].texture = SKTexture(imageNamed: "icon_element_\(symbols[2])")
             }
 
             let alpha: CGFloat = isUsed ? 0.45 : 1.0
 
             reelNodes[index].alpha = alpha
-            topLabels[index].alpha = alpha
-            centerLabels[index].alpha = alpha
-            bottomLabels[index].alpha = alpha
+            topSymbols[index].alpha = alpha
+            centerSymbols[index].alpha = alpha
+            bottomSymbols[index].alpha = alpha
 
             reelNodes[index].strokeColor = isUsed
                 ? UIColor.gray
@@ -108,9 +108,9 @@ final class ReelGameScene: SKScene {
         removeAllChildren()
 
         reelNodes.removeAll()
-        topLabels.removeAll()
-        centerLabels.removeAll()
-        bottomLabels.removeAll()
+        topSymbols.removeAll()
+        centerSymbols.removeAll()
+        bottomSymbols.removeAll()
 
         let panelWidth: CGFloat = 670
         let panelHeight: CGFloat = 390
@@ -174,26 +174,29 @@ final class ReelGameScene: SKScene {
             bottomShade.zPosition = 11
             addChild(bottomShade)
 
-            let topLabel = makeLabel(text: "💧", fontSize: 38)
-            topLabel.position = CGPoint(x: x, y: y + reelHeight * 0.28)
-            topLabel.name = "reel_\(index)"
-            topLabel.zPosition = 30
-            addChild(topLabel)
-            topLabels.append(topLabel)
+            let topSymbol = SKSpriteNode(imageNamed: "icon_element_water")
+            topSymbol.size = CGSize(width: 80, height: 80)
+            topSymbol.position = CGPoint(x: x, y: y + reelHeight * 0.28)
+            topSymbol.name = "reel_\(index)"
+            topSymbol.zPosition = 30
+            addChild(topSymbol)
+            topSymbols.append(topSymbol)
 
-            let centerLabel = makeLabel(text: "🔥", fontSize: 54)
-            centerLabel.position = CGPoint(x: x, y: y)
-            centerLabel.name = "reel_\(index)"
-            centerLabel.zPosition = 30
-            addChild(centerLabel)
-            centerLabels.append(centerLabel)
+            let centerSymbol = SKSpriteNode(imageNamed: "icon_element_fire")
+            centerSymbol.size = CGSize(width: 100, height: 100)
+            centerSymbol.position = CGPoint(x: x, y: y)
+            centerSymbol.name = "reel_\(index)"
+            centerSymbol.zPosition = 30
+            addChild(centerSymbol)
+            centerSymbols.append(centerSymbol)
 
-            let bottomLabel = makeLabel(text: "🪨", fontSize: 38)
-            bottomLabel.position = CGPoint(x: x, y: y - reelHeight * 0.28)
-            bottomLabel.name = "reel_\(index)"
-            bottomLabel.zPosition = 30
-            addChild(bottomLabel)
-            bottomLabels.append(bottomLabel)
+            let bottomSymbol = SKSpriteNode(imageNamed: "icon_element_earth")
+            bottomSymbol.size = CGSize(width: 80, height: 80)
+            bottomSymbol.position = CGPoint(x: x, y: y - reelHeight * 0.28)
+            bottomSymbol.name = "reel_\(index)"
+            bottomSymbol.zPosition = 30
+            addChild(bottomSymbol)
+            bottomSymbols.append(bottomSymbol)
         }
 
         let tapLabel = makeLabel(text: "TAP TO PLAY!", fontSize: 40)
@@ -210,24 +213,26 @@ final class ReelGameScene: SKScene {
         finalBottom: String
     ) {
         guard index >= 0,
-              index < topLabels.count,
-              index < centerLabels.count,
-              index < bottomLabels.count,
+              index < topSymbols.count,
+              index < centerSymbols.count,
+              index < bottomSymbols.count,
               index < reelNodes.count else {
             return
         }
 
-        let possibleSymbols = ["🔥", "💧", "🪨"]
+        let possibleSymbols = ["fire", "water", "earth"]
 
-        let top = topLabels[index]
-        let center = centerLabels[index]
-        let bottom = bottomLabels[index]
+        let top = topSymbols[index]
+        let center = centerSymbols[index]
+        let bottom = bottomSymbols[index]
         let reel = reelNodes[index]
 
         let tick = SKAction.run {
-            top.text = possibleSymbols.randomElement()
-            center.text = possibleSymbols.randomElement()
-            bottom.text = possibleSymbols.randomElement()
+            if let randomSymbol = possibleSymbols.randomElement() {
+                top.texture = SKTexture(imageNamed: "icon_element_\(randomSymbol)")
+                center.texture = SKTexture(imageNamed: "icon_element_\(randomSymbol)")
+                bottom.texture = SKTexture(imageNamed: "icon_element_\(randomSymbol)")
+            }
         }
 
         let cycle = SKAction.sequence([
@@ -238,9 +243,9 @@ final class ReelGameScene: SKScene {
         let spin = SKAction.repeat(cycle, count: 10)
 
         let stop = SKAction.run {
-            top.text = finalTop
-            center.text = finalCenter
-            bottom.text = finalBottom
+            top.texture = SKTexture(imageNamed: "icon_element_\(finalTop)")
+            center.texture = SKTexture(imageNamed: "icon_element_\(finalCenter)")
+            bottom.texture = SKTexture(imageNamed: "icon_element_\(finalBottom)")
 
             center.run(.sequence([
                 .scale(to: 1.18, duration: 0.08),

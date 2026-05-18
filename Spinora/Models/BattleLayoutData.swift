@@ -33,9 +33,9 @@ struct BattleLayoutData {
         enemyMaxHP: 100,
         rerollText: "↻ 3/3",
         reelColumns: [
-            ["💧", "🔥", "🔥"],
-            ["🔥", "💧", "🪨"],
-            ["🪨", "🪨", "💧"]
+            ["water", "fire", "fire"],
+            ["fire", "water", "earth"],
+            ["earth", "earth", "water"]
         ],
         reelRolledThisTurn: [false, false, false],
         lastRolledIndex: nil,

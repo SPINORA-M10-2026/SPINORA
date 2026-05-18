@@ -55,7 +55,7 @@ struct GameBattleView: View {
 
             ArenaLayout(data: data)
 
-            BottomFrameLayout()
+//            BottomFrameLayout()
 
             ReelLayout(
                 rerollText: data.rerollText,
