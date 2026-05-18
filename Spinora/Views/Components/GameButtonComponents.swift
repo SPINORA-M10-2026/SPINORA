@@ -18,8 +18,8 @@ struct BottomButtonLayout: View {
             }
             .buttonStyle(.plain)
             .disabled(!canAttack)
-            .frame(width: 245, height: 105)
-            .position(x: 685, y: 1035)
+            .frame(width: 180, height: 105)
+            .position(x: 730, y: 1150)
         }
     }
 }
@@ -29,12 +29,9 @@ struct AttackButtonSlot: View {
 
     var body: some View {
         ZStack {
-            AssetSlot(
-                "attack_button",
-                fill: isEnabled ? GameColor.buttonYellow : Color.gray,
-                cornerRadius: 16,
-                showLabel: false
-            )
+            RoundedRectangle(cornerRadius: 6)
+                .fill(GameColor.buttonYellow)
+            
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(GameColor.wood, lineWidth: 5)

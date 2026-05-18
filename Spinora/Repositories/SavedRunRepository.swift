@@ -44,7 +44,7 @@ final class SavedRunRepository {
             enemyMaxHP: 90,
             accumulatedBonusHP: 0,
             accumulatedBonusAttack: 0,
-            currentReelSymbols: ["💧", "🔥", "🪨"],
+            currentReelSymbols: ["water", "fire", "earth"],
             rolledThisTurn: [false, false, false],
             isPlayerDead: false,
             canRetryWave: false
@@ -129,7 +129,7 @@ final class SavedRunRepository {
         run.playerHP = run.playerMaxHP
         run.enemyHP = run.enemyMaxHP
 
-        run.currentReelSymbols = ["💧", "🔥", "🪨"]
+        run.currentReelSymbols = ["water", "fire", "earth"]
         run.rolledThisTurn = [false, false, false]
 
         run.isPlayerDead = false
@@ -158,7 +158,7 @@ final class SavedRunRepository {
             enemyMaxHP: 90,
             accumulatedBonusHP: 0,
             accumulatedBonusAttack: 0,
-            currentReelSymbols: ["💧", "🔥", "🪨"],
+            currentReelSymbols: ["water", "fire", "earth"],
             rolledThisTurn: [false, false, false],
             isPlayerDead: false,
             canRetryWave: false

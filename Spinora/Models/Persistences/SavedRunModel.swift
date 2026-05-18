@@ -43,7 +43,7 @@ final class SavedRunModel {
         enemyMaxHP: Int = 90,
         accumulatedBonusHP: Int = 0,
         accumulatedBonusAttack: Int = 0,
-        currentReelSymbols: [String] = ["💧", "🔥", "🪨"],
+        currentReelSymbols: [String] = ["water", "fire", "earth"],
         rolledThisTurn: [Bool] = [false, false, false],
         isPlayerDead: Bool = false,
         canRetryWave: Bool = false,

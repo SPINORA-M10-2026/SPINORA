@@ -93,26 +93,26 @@ private struct WaveClearedOverlay: View {
             GamePixelText("pick your reward", size: 25)
                 .foregroundStyle(.white)
 
-            HStack(spacing: 28) {
+            HStack(spacing: 0) {
                 RewardCardView(
-                    icon: "❤️",
+                    icon: "button_reward_hp_default",
                     title: "+10% HP",
                     action: onHP
                 )
 
                 RewardCardView(
-                    icon: "⚔️",
+                    icon: "button_reward_atk_default",
                     title: "+10% ATK",
                     action: onAttack
                 )
             }
 
-            GameWideButton(
-                title: "OK",
-                width: 230,
-                height: 68,
-                action: onOK
-            )
+//            GameWideButton(
+//                title: "OK",
+//                width: 230,
+//                height: 68,
+//                action: onOK
+//            )
         }
         .padding(.horizontal, 20)
     }

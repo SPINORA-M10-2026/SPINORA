@@ -28,6 +28,7 @@ struct AssetSlot: View {
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius)
             .fill(fill)
+            .opacity(0)
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(GameColor.placeholderStroke, lineWidth: 1.5)
