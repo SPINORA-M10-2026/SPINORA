@@ -55,16 +55,18 @@
 //}
 
 import UIKit
-import SpriteKit
-import GameplayKit
 import SwiftUI
+import SwiftData
 
 class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let hostingController = UIHostingController(rootView: GameLayoutDemoView())
+        let rootView = GameLayoutDemoView()
+            .modelContainer(AppModelContainer.shared)
+
+        let hostingController = UIHostingController(rootView: rootView)
 
         addChild(hostingController)
 
