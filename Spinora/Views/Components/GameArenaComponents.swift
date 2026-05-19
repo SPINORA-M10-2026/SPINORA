@@ -12,6 +12,8 @@ struct ArenaLayout: View {
     var playerState: PlayerAnimationState = .idle
     var enemyAppearance: EnemyAppearance? = nil
 
+    @State private var enemyFloat: CGFloat = 0
+
     var body: some View {
         ZStack {
             AssetSlot(
@@ -33,41 +35,29 @@ struct ArenaLayout: View {
             .frame(width: 270, height: 30)
             .position(x: 445, y: 455)
 
-            if let appearance = enemyAppearance {
-                EnemySpriteView(appearance: appearance)
+            Group {
+                if let appearance = enemyAppearance {
+                    EnemySpriteView(appearance: appearance)
+                        .frame(width: 175, height: 175)
+                } else {
+                    AssetSlot(
+                        "enemy_idle",
+                        fill: Color.purple.opacity(0.18),
+                        cornerRadius: 16
+                    )
                     .frame(width: 175, height: 175)
-                    .position(x: 690, y: 525)
-            } else {
-                AssetSlot(
-                    "enemy_idle",
-                    fill: Color.purple.opacity(0.18),
-                    cornerRadius: 16
-                )
-                .frame(width: 175, height: 175)
-                .position(x: 690, y: 525)
+                }
             }
-
-            AssetSlot(
-                "enemy_shadow",
-                fill: Color.black.opacity(0.35),
-                cornerRadius: 20,
-                showLabel: false
-            )
-            .frame(width: 120, height: 24)
-            .position(x: 690, y: 627)
+            .position(x: 690, y: 525 + enemyFloat)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
+                    enemyFloat = -12
+                }
+            }
 
             PlayerSpriteView(state: playerState)
                 .frame(width: 165, height: 205)
                 .position(x: 112, y: 860)
-
-            AssetSlot(
-                "player_shadow",
-                fill: Color.black.opacity(0.25),
-                cornerRadius: 20,
-                showLabel: false
-            )
-            .frame(width: 120, height: 24)
-            .position(x: 112, y: 975)
 
             HealthBarSlot(
                 label: "player_hp_bar",
