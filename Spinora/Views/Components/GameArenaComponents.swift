@@ -12,6 +12,8 @@ struct ArenaLayout: View {
     var playerState: PlayerAnimationState = .idle
     var enemyAppearance: EnemyAppearance? = nil
 
+    @State private var enemyFloat: CGFloat = 0
+
     var body: some View {
         ZStack {
             HealthBarSlot(
@@ -29,28 +31,25 @@ struct ArenaLayout: View {
 //                .frame(width: 220, height: 220)
 //                .position(x: 690, y: 427)
 
-            if let appearance = enemyAppearance {
-                EnemySpriteView(appearance: appearance)
+            Group {
+                if let appearance = enemyAppearance {
+                    EnemySpriteView(appearance: appearance)
+                        .frame(width: 175, height: 175)
+                } else {
+                    AssetSlot(
+                        "enemy_idle",
+                        fill: Color.purple.opacity(0.18),
+                        cornerRadius: 16
+                    )
                     .frame(width: 175, height: 175)
-                    .position(x: 690, y: 525)
-            } else {
-                AssetSlot(
-                    "enemy_idle",
-                    fill: Color.purple.opacity(0.18),
-                    cornerRadius: 16
-                )
-                .frame(width: 175, height: 175)
-                .position(x: 690, y: 525)
+                }
             }
-
-            AssetSlot(
-                "enemy_shadow",
-                fill: Color.black.opacity(0.35),
-                cornerRadius: 20,
-                showLabel: false
-            )
-            .frame(width: 120, height: 24)
-            .position(x: 690, y: 627)
+            .position(x: 690, y: 525 + enemyFloat)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
+                    enemyFloat = -12
+                }
+            }
 
             PlayerSpriteView(state: playerState)
                 .frame(width: 165, height: 205)
