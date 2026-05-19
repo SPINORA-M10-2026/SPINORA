@@ -51,8 +51,9 @@ struct TopFrameLayout: View {
             // backround map
             Image("background_environment")
                 .resizable()
-                .frame(width: 832, height: 1150)
-                .position(x: 416, y: 715)
+//                .frame(width: 832, height: 1750)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .position(x: 416, y: 875)
                 .zIndex(5)
             
             // backround top & bottom bar (wood)
