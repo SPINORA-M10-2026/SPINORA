@@ -41,7 +41,7 @@ struct ArenaLayout: View {
                     .frame(width: 270, height: 270)
                 }
             }
-            .position(x: 660, y: 480 + enemyFloat)
+            .position(x: 660, y: 490 + enemyFloat)
             .onAppear {
                 withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
                     enemyFloat = -12
