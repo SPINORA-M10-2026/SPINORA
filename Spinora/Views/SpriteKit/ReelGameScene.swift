@@ -19,6 +19,13 @@ final class ReelGameScene: SKScene {
 
     var onReelTap: ((Int) -> Void)?
 
+    var showTapToPlay: Bool = true {
+        didSet {
+            if !showTapToPlay { hideTapToPlay() }
+        }
+    }
+
+    private var tapLabel: SKLabelNode?
     private var panelNode = SKShapeNode()
 
     private var reelNodes: [SKShapeNode] = []
@@ -199,11 +206,24 @@ final class ReelGameScene: SKScene {
             bottomSymbols.append(bottomSymbol)
         }
 
-        let tapLabel = makeLabel(text: "TAP TO PLAY!", fontSize: 40)
-        tapLabel.position = CGPoint(x: centerX, y: centerY)
-        tapLabel.zPosition = 40
-        tapLabel.alpha = 0.88
-        addChild(tapLabel)
+        tapLabel = nil
+        if showTapToPlay {
+            let label = makeLabel(text: "TAP TO PLAY!", fontSize: 40)
+            label.position = CGPoint(x: centerX, y: centerY)
+            label.zPosition = 40
+            label.alpha = 0.88
+            addChild(label)
+            tapLabel = label
+        }
+    }
+
+    func hideTapToPlay() {
+        guard let label = tapLabel else { return }
+        tapLabel = nil
+        label.run(.sequence([
+            .fadeOut(withDuration: 0.25),
+            .removeFromParent()
+        ]))
     }
 
     private func animateReelStop(

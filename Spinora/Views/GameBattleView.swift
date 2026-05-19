@@ -64,6 +64,7 @@ struct GameBattleView: View {
                 reelColumns: data.reelColumns,
                 reelRolledThisTurn: data.reelRolledThisTurn,
                 lastRolledIndex: data.lastRolledIndex,
+                showTapToPlay: data.showTapToPlay,
                 onGuidebookTap: onGuidebookTap,
                 onReelTap: onReelTap
             )

@@ -36,6 +36,7 @@ struct ReelLayout: View {
     let reelColumns: [[String]]
     let reelRolledThisTurn: [Bool]
     let lastRolledIndex: Int?
+    let showTapToPlay: Bool
     let onGuidebookTap: () -> Void
     let onReelTap: (Int) -> Void
 
@@ -70,6 +71,7 @@ struct ReelLayout: View {
                     reelColumns: reelColumns,
                     reelRolledThisTurn: reelRolledThisTurn,
                     lastRolledIndex: lastRolledIndex,
+                    showTapToPlay: showTapToPlay,
                     onReelTap: onReelTap
                 )
                 .frame(width: 670, height: 390)

@@ -37,7 +37,7 @@ final class GameViewModel: ObservableObject {
 
     init(reelManager: ReelManager = ReelManager()) {
         self.reelManager = reelManager
-        self.player = Character(hp: 100, maxHp: 100, baseAttack: 20, element: nil)
+        self.player = Character(hp: 100, maxHp: 100, baseAttack: 80, element: nil)
         let (firstMonster, firstAppearance) = Self.makeMonsterAndAppearance(wave: 1)
         self.monster = firstMonster
         self.enemyAppearance = firstAppearance
@@ -145,7 +145,7 @@ final class GameViewModel: ObservableObject {
 
     func resetGame() {
         currentWave = 1
-        player = Character(hp: 100, maxHp: 100, baseAttack: 20, element: nil)
+        player = Character(hp: 100, maxHp: 100, baseAttack: 80, element: nil)
         let (newMonster, newAppearance) = Self.makeMonsterAndAppearance(wave: 1)
         monster = newMonster
         enemyAppearance = newAppearance

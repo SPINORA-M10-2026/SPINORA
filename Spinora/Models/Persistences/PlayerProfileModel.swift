@@ -33,7 +33,7 @@ final class PlayerProfileModel {
         totalDeaths: Int = 0,
         totalEnemiesDefeated: Int = 0,
         baseMaxHP: Int = 100,
-        baseAttack: Int = 80,
+        baseAttack: Int = 20,
         createdAt: Date = Date(),
         updatedAt: Date = Date()
     ) {
