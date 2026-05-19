@@ -13,6 +13,7 @@ struct ReelSceneView: View {
     let reelColumns: [[String]]
     let reelRolledThisTurn: [Bool]
     let lastRolledIndex: Int?
+    let showTapToPlay: Bool
     let onReelTap: (Int) -> Void
 
     @StateObject private var sceneStore = ReelSceneStore()
@@ -25,12 +26,16 @@ struct ReelSceneView: View {
         .background(Color.clear)
         .onAppear {
             sceneStore.scene.onReelTap = onReelTap
+            sceneStore.scene.showTapToPlay = showTapToPlay
 
             sceneStore.scene.updateScene(
                 reelColumns: reelColumns,
                 reelRolledThisTurn: reelRolledThisTurn,
                 animatedChangedIndex: nil
             )
+        }
+        .onChange(of: showTapToPlay) { _, newValue in
+            sceneStore.scene.showTapToPlay = newValue
         }
         .onChange(of: reelColumns) { _, newValue in
             sceneStore.scene.updateScene(

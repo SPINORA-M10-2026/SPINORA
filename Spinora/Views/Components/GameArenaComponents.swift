@@ -24,6 +24,8 @@ struct ArenaLayout: View {
                 fillColor: GameColor.hpRed
             )
             .frame(width: 270, height: 30)
+            .opacity(data.isEnemyDefeated ? 0.0 : 1.0)
+            .animation(.easeOut(duration: 0.3), value: data.isEnemyDefeated)
             .position(x: 445, y: 455)
             
             // enemy evatar
@@ -44,6 +46,9 @@ struct ArenaLayout: View {
                     .frame(width: 175, height: 175)
                 }
             }
+            .scaleEffect(data.isEnemyDefeated ? 0.2 : 1.0)
+            .opacity(data.isEnemyDefeated ? 0.0 : 1.0)
+            .animation(.easeOut(duration: 0.6), value: data.isEnemyDefeated)
             .position(x: 690, y: 525 + enemyFloat)
             .onAppear {
                 withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {

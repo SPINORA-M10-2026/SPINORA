@@ -34,8 +34,8 @@ struct DamageCalculator {
         }
         
         // 3. Kalkulasi Final
-        // Formula: Base Attack x (Jumlah Multiplier Elemen) x Multiplier Combo
-        let finalDamage = Double(baseAttack) * totalElementMultiplier * comboMultiplier
+        // Tanpa combo → base damage saja. Combo memberi multiplier.
+        let finalDamage = Double(baseAttack) * comboMultiplier
         
         return Int(finalDamage)
     }

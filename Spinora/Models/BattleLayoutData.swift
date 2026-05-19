@@ -23,14 +23,16 @@ struct BattleLayoutData {
     var lastRolledIndex: Int?
 
     var canAttack: Bool
+    var isEnemyDefeated: Bool = false
+    var showTapToPlay: Bool = true
 
     static let preview = BattleLayoutData(
         waveText: "001",
-        playerHP: 90,
+        playerHP: 100,
         playerMaxHP: 100,
-        playerAttackText: "79.90",
-        enemyHP: 90,
-        enemyMaxHP: 100,
+        playerAttackText: "20",
+        enemyHP: 70,
+        enemyMaxHP: 70,
         rerollText: "↻ 3/3",
         reelColumns: [
             ["water", "fire", "fire"],
