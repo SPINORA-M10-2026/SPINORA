@@ -96,9 +96,14 @@ struct ReelLayout: View {
             // MARK: - Reel Machine
 
             ReelSceneView(
+//                reelColumns: reelColumns,
+//                reelRolledThisTurn: reelRolledThisTurn,
+//                lastRolledIndex: lastRolledIndex,
+//                onReelTap: onReelTap
                 reelColumns: reelColumns,
                 reelRolledThisTurn: reelRolledThisTurn,
                 lastRolledIndex: lastRolledIndex,
+                showTapToPlay: showTapToPlay,
                 onReelTap: onReelTap
             )
             .frame(width: 670, height: 390)
