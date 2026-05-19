@@ -80,7 +80,7 @@ struct ReelLayout: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 850)
-                    .zIndex(15)
+                    .zIndex(5)
                     .position(x: 416, y: 890)
             }
         }
