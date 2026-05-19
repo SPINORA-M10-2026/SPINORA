@@ -19,12 +19,15 @@ final class ReelGameScene: SKScene {
 
     var onReelTap: ((Int) -> Void)?
 
-    private var panelNode = SKShapeNode()
+    private var machineBaseNode = SKSpriteNode()
 
-    private var reelNodes: [SKShapeNode] = []
+    private var topRowOverlayNodes: [SKShapeNode] = []
+    private var bottomRowOverlayNodes: [SKShapeNode] = []
+
     private var topSymbols: [SKSpriteNode] = []
     private var centerSymbols: [SKSpriteNode] = []
     private var bottomSymbols: [SKSpriteNode] = []
+    private var touchNodes: [SKShapeNode] = []
 
     override func didMove(to view: SKView) {
         backgroundColor = .clear
@@ -59,24 +62,23 @@ final class ReelGameScene: SKScene {
         reelRolledThisTurn: [Bool],
         animatedChangedIndex: Int?
     ) {
-        self.reelColumns = reelColumns
+        self.reelColumns = normalizeColumns(reelColumns)
         self.reelRolledThisTurn = reelRolledThisTurn
 
         guard topSymbols.count == 3,
               centerSymbols.count == 3,
               bottomSymbols.count == 3,
-              reelNodes.count == 3 else {
+              touchNodes.count == 3 else {
             return
         }
 
         for index in 0..<3 {
-            guard index < reelColumns.count,
-                  reelColumns[index].count >= 3 else {
+            guard index < self.reelColumns.count,
+                  self.reelColumns[index].count >= 3 else {
                 continue
             }
 
-            let symbols = reelColumns[index]
-            let isUsed = isReelUsed(index)
+            let symbols = self.reelColumns[index]
 
             if animatedChangedIndex == index {
                 animateReelStop(
@@ -86,124 +88,169 @@ final class ReelGameScene: SKScene {
                     finalBottom: symbols[2]
                 )
             } else {
-                topSymbols[index].texture = SKTexture(imageNamed: "icon_element_\(symbols[0])")
-                centerSymbols[index].texture = SKTexture(imageNamed: "icon_element_\(symbols[1])")
-                bottomSymbols[index].texture = SKTexture(imageNamed: "icon_element_\(symbols[2])")
+                setSymbolTexture(topSymbols[index], symbol: symbols[0])
+                setSymbolTexture(centerSymbols[index], symbol: symbols[1])
+                setSymbolTexture(bottomSymbols[index], symbol: symbols[2])
             }
 
-            let alpha: CGFloat = isUsed ? 0.45 : 1.0
-
-            reelNodes[index].alpha = alpha
-            topSymbols[index].alpha = alpha
-            centerSymbols[index].alpha = alpha
-            bottomSymbols[index].alpha = alpha
-
-            reelNodes[index].strokeColor = isUsed
-                ? UIColor.gray
-                : UIColor(red: 0.18, green: 0.09, blue: 0.05, alpha: 1.0)
+            // Keep icons fully visible.
+            // Used state is already shown by the arrows, so do not dim the whole reel.
+            topSymbols[index].alpha = 1.0
+            centerSymbols[index].alpha = 1.0
+            bottomSymbols[index].alpha = 1.0
         }
     }
 
     private func buildScene() {
         removeAllChildren()
 
-        reelNodes.removeAll()
+        topRowOverlayNodes.removeAll()
+        bottomRowOverlayNodes.removeAll()
+
         topSymbols.removeAll()
         centerSymbols.removeAll()
         bottomSymbols.removeAll()
-
-        let panelWidth: CGFloat = 670
-        let panelHeight: CGFloat = 390
+        touchNodes.removeAll()
 
         let centerX = size.width / 2
         let centerY = size.height / 2
 
-        panelNode = SKShapeNode(
-            rectOf: CGSize(width: panelWidth, height: panelHeight),
-            cornerRadius: 28
-        )
-        panelNode.fillColor = UIColor(red: 0.48, green: 0.25, blue: 0.14, alpha: 1.0)
-        panelNode.strokeColor = .clear
-        panelNode.position = CGPoint(x: centerX, y: centerY)
-        panelNode.zPosition = 1
-        addChild(panelNode)
+        // MARK: - Main Machine Border / Background
 
-        let reelWidth: CGFloat = 190
-        let reelHeight: CGFloat = 315
+        let machineWidth: CGFloat = 830
+        let machineHeight: CGFloat = 1640
+
+        machineBaseNode = SKSpriteNode(imageNamed: "background_jackpot_list")
+        machineBaseNode.size = CGSize(width: machineWidth, height: machineHeight)
+        machineBaseNode.position = CGPoint(x: centerX, y: centerY + 520)
+        machineBaseNode.zPosition = 1
+        addChild(machineBaseNode)
+
+        // MARK: - Reel Layout Values
 
         let reelXPositions: [CGFloat] = [
-            centerX - 201,
+            centerX - 214,
             centerX,
-            centerX + 201
+            centerX + 214
         ]
 
+        let iconXOffset: CGFloat = 0
+        let iconYOffset: CGFloat = -2
+
+        let topYOffset: CGFloat = 103
+        let centerYOffset: CGFloat = -4
+        let bottomYOffset: CGFloat = -122
+
+        let topIconSize = CGSize(width: 68, height: 68)
+        let centerIconSize = CGSize(width: 104, height: 104)
+        let bottomIconSize = CGSize(width: 68, height: 68)
+
+        let touchWidth: CGFloat = 190
+        let touchHeight: CGFloat = 330
+
+        // MARK: - Icon Placement
+        // Icons are placed first.
+
         for index in 0..<3 {
-            let x = reelXPositions[index]
-            let y = centerY
-
-            let reelNode = SKShapeNode(
-                rectOf: CGSize(width: reelWidth, height: reelHeight),
-                cornerRadius: 16
-            )
-            reelNode.fillColor = UIColor(red: 0.95, green: 0.72, blue: 0.43, alpha: 1.0)
-            reelNode.strokeColor = UIColor(red: 0.18, green: 0.09, blue: 0.05, alpha: 1.0)
-            reelNode.lineWidth = 7
-            reelNode.position = CGPoint(x: x, y: y)
-            reelNode.name = "reel_\(index)"
-            reelNode.zPosition = 10
-            addChild(reelNode)
-            reelNodes.append(reelNode)
-
-            let topShade = SKShapeNode(
-                rectOf: CGSize(width: reelWidth - 14, height: reelHeight / 3),
-                cornerRadius: 0
-            )
-            topShade.fillColor = UIColor(red: 0.84, green: 0.58, blue: 0.32, alpha: 0.62)
-            topShade.strokeColor = .clear
-            topShade.position = CGPoint(x: x, y: y + reelHeight / 3)
-            topShade.zPosition = 11
-            addChild(topShade)
-
-            let bottomShade = SKShapeNode(
-                rectOf: CGSize(width: reelWidth - 14, height: reelHeight / 3),
-                cornerRadius: 0
-            )
-            bottomShade.fillColor = UIColor(red: 0.84, green: 0.58, blue: 0.32, alpha: 0.62)
-            bottomShade.strokeColor = .clear
-            bottomShade.position = CGPoint(x: x, y: y - reelHeight / 3)
-            bottomShade.zPosition = 11
-            addChild(bottomShade)
+            let x = reelXPositions[index] + iconXOffset
+            let y = centerY + iconYOffset
 
             let topSymbol = SKSpriteNode(imageNamed: "icon_element_water")
-            topSymbol.size = CGSize(width: 80, height: 80)
-            topSymbol.position = CGPoint(x: x, y: y + reelHeight * 0.28)
+            topSymbol.size = topIconSize
+            topSymbol.position = CGPoint(x: x, y: y + topYOffset)
             topSymbol.name = "reel_\(index)"
             topSymbol.zPosition = 30
             addChild(topSymbol)
             topSymbols.append(topSymbol)
 
             let centerSymbol = SKSpriteNode(imageNamed: "icon_element_fire")
-            centerSymbol.size = CGSize(width: 100, height: 100)
-            centerSymbol.position = CGPoint(x: x, y: y)
+            centerSymbol.size = centerIconSize
+            centerSymbol.position = CGPoint(x: x, y: y + centerYOffset)
             centerSymbol.name = "reel_\(index)"
             centerSymbol.zPosition = 30
             addChild(centerSymbol)
             centerSymbols.append(centerSymbol)
 
             let bottomSymbol = SKSpriteNode(imageNamed: "icon_element_earth")
-            bottomSymbol.size = CGSize(width: 80, height: 80)
-            bottomSymbol.position = CGPoint(x: x, y: y - reelHeight * 0.28)
+            bottomSymbol.size = bottomIconSize
+            bottomSymbol.position = CGPoint(x: x, y: y + bottomYOffset)
             bottomSymbol.name = "reel_\(index)"
             bottomSymbol.zPosition = 30
             addChild(bottomSymbol)
             bottomSymbols.append(bottomSymbol)
         }
 
-        let tapLabel = makeLabel(text: "TAP TO PLAY!", fontSize: 40)
-        tapLabel.position = CGPoint(x: centerX, y: centerY)
+        // MARK: - Full Top/Bottom Row Dark Overlays
+        // These are above the icons, so the whole top/bottom rows are dimmed.
+        // The middle/result row stays clear.
+
+        let rowOverlayWidth: CGFloat = 205
+        let topRowOverlayHeight: CGFloat = 103
+        let bottomRowOverlayHeight: CGFloat = 116
+        let rowOverlayColor = UIColor.black.withAlphaComponent(0.22)
+
+        for index in 0..<3 {
+            let x = reelXPositions[index]
+
+            let topOverlay = SKShapeNode(
+                rectOf: CGSize(
+                    width: rowOverlayWidth,
+                    height: topRowOverlayHeight
+                ),
+                cornerRadius: 0
+            )
+            topOverlay.fillColor = rowOverlayColor
+            topOverlay.strokeColor = .clear
+            topOverlay.position = CGPoint(
+                x: x,
+                y: centerY + topYOffset
+            )
+            topOverlay.zPosition = 35
+            addChild(topOverlay)
+            topRowOverlayNodes.append(topOverlay)
+
+            let bottomOverlay = SKShapeNode(
+                rectOf: CGSize(
+                    width: rowOverlayWidth,
+                    height: bottomRowOverlayHeight
+                ),
+                cornerRadius: 0
+            )
+            bottomOverlay.fillColor = rowOverlayColor
+            bottomOverlay.strokeColor = .clear
+            bottomOverlay.position = CGPoint(
+                x: x,
+                y: centerY + bottomYOffset
+            )
+            bottomOverlay.zPosition = 35
+            addChild(bottomOverlay)
+            bottomRowOverlayNodes.append(bottomOverlay)
+        }
+
+        // MARK: - Tap Label
+
+        let tapLabel = makeLabel(text: "TAP TO PLAY!", fontSize: 42)
+        tapLabel.position = CGPoint(x: centerX, y: centerY + 2)
         tapLabel.zPosition = 40
-        tapLabel.alpha = 0.88
+        tapLabel.alpha = 0.92
         addChild(tapLabel)
+
+        // MARK: - Touch Areas
+
+        for index in 0..<3 {
+            let touchNode = SKShapeNode(
+                rectOf: CGSize(width: touchWidth, height: touchHeight),
+                cornerRadius: 16
+            )
+            touchNode.fillColor = .clear
+            touchNode.strokeColor = .clear
+            touchNode.lineWidth = 0
+            touchNode.position = CGPoint(x: reelXPositions[index], y: centerY)
+            touchNode.name = "reel_\(index)"
+            touchNode.zPosition = 60
+            addChild(touchNode)
+            touchNodes.append(touchNode)
+        }
     }
 
     private func animateReelStop(
@@ -216,7 +263,7 @@ final class ReelGameScene: SKScene {
               index < topSymbols.count,
               index < centerSymbols.count,
               index < bottomSymbols.count,
-              index < reelNodes.count else {
+              index < touchNodes.count else {
             return
         }
 
@@ -225,14 +272,16 @@ final class ReelGameScene: SKScene {
         let top = topSymbols[index]
         let center = centerSymbols[index]
         let bottom = bottomSymbols[index]
-        let reel = reelNodes[index]
+        let touchNode = touchNodes[index]
 
         let tick = SKAction.run {
-            if let randomSymbol = possibleSymbols.randomElement() {
-                top.texture = SKTexture(imageNamed: "icon_element_\(randomSymbol)")
-                center.texture = SKTexture(imageNamed: "icon_element_\(randomSymbol)")
-                bottom.texture = SKTexture(imageNamed: "icon_element_\(randomSymbol)")
-            }
+            let randomTop = possibleSymbols.randomElement() ?? "water"
+            let randomCenter = possibleSymbols.randomElement() ?? "fire"
+            let randomBottom = possibleSymbols.randomElement() ?? "earth"
+
+            self.setSymbolTexture(top, symbol: randomTop)
+            self.setSymbolTexture(center, symbol: randomCenter)
+            self.setSymbolTexture(bottom, symbol: randomBottom)
         }
 
         let cycle = SKAction.sequence([
@@ -243,17 +292,17 @@ final class ReelGameScene: SKScene {
         let spin = SKAction.repeat(cycle, count: 10)
 
         let stop = SKAction.run {
-            top.texture = SKTexture(imageNamed: "icon_element_\(finalTop)")
-            center.texture = SKTexture(imageNamed: "icon_element_\(finalCenter)")
-            bottom.texture = SKTexture(imageNamed: "icon_element_\(finalBottom)")
+            self.setSymbolTexture(top, symbol: finalTop)
+            self.setSymbolTexture(center, symbol: finalCenter)
+            self.setSymbolTexture(bottom, symbol: finalBottom)
 
             center.run(.sequence([
-                .scale(to: 1.18, duration: 0.08),
+                .scale(to: 1.12, duration: 0.08),
                 .scale(to: 1.0, duration: 0.10)
             ]))
 
-            reel.run(.sequence([
-                .scale(to: 1.06, duration: 0.08),
+            touchNode.run(.sequence([
+                .scale(to: 1.03, duration: 0.08),
                 .scale(to: 1.0, duration: 0.10)
             ]))
         }
@@ -262,6 +311,50 @@ final class ReelGameScene: SKScene {
             spin,
             stop
         ]))
+    }
+
+    // MARK: - Symbol Mapping
+
+    private func normalizeColumns(_ columns: [[String]]) -> [[String]] {
+        columns.map { column in
+            column.map { normalizeSymbol($0) }
+        }
+    }
+
+    private func normalizeSymbol(_ symbol: String) -> String {
+        switch symbol {
+        case "fire", "🔥":
+            return "fire"
+
+        case "water", "💧":
+            return "water"
+
+        case "earth", "🪨":
+            return "earth"
+
+        default:
+            return "fire"
+        }
+    }
+
+    private func setSymbolTexture(_ node: SKSpriteNode, symbol: String) {
+        node.texture = SKTexture(imageNamed: assetName(for: symbol))
+    }
+
+    private func assetName(for symbol: String) -> String {
+        switch normalizeSymbol(symbol) {
+        case "fire":
+            return "icon_element_fire"
+
+        case "water":
+            return "icon_element_water"
+
+        case "earth":
+            return "icon_element_earth"
+
+        default:
+            return "icon_element_fire"
+        }
     }
 
     private func makeLabel(text: String, fontSize: CGFloat) -> SKLabelNode {

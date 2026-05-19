@@ -39,9 +39,12 @@ struct ReelLayout: View {
     let onGuidebookTap: () -> Void
     let onReelTap: (Int) -> Void
 
+    @State private var sharedBlinkPhase = false
+
     var body: some View {
         ZStack {
-            // Guidebook button — same horizontal line as reroll chance
+            // MARK: - Guidebook Button
+
             Button(action: onGuidebookTap) {
                 Image("button_element_book")
                     .resizable()
@@ -52,7 +55,8 @@ struct ReelLayout: View {
             .frame(height: 270)
             .position(x: 10, y: 1195)
 
-            // Reroll counter
+            // MARK: - Reroll Counter
+
             HStack(spacing: 10) {
                 Image("icon_reroll_images")
                     .resizable()
@@ -63,31 +67,64 @@ struct ReelLayout: View {
             }
             .position(x: 416, y: 1195)
 
-            // Down arrows
-            ZStack {
-                // SpriteKit reel panel only
-                ReelSceneView(
-                    reelColumns: reelColumns,
-                    reelRolledThisTurn: reelRolledThisTurn,
-                    lastRolledIndex: lastRolledIndex,
-                    onReelTap: onReelTap
+            // MARK: - Top Arrows
+            // All active arrows use the same shared blink phase.
+
+            ForEach(0..<3, id: \.self) { index in
+                BlinkingReelArrow(
+                    symbol: "⌄",
+                    isActive: canBlinkArrow(index),
+                    isBright: sharedBlinkPhase
                 )
-                .frame(width: 670, height: 390)
-                .position(x: 416, y: 1485)
-                .zIndex(10)
-                
-                Image("background_jackpot_arrow_blink")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 850)
-                    .zIndex(5)
-                    .position(x: 416, y: 890)
+                .position(
+                    x: reelXPosition(index),
+                    y: 1288
+                )
             }
+
+            // MARK: - Reel Machine
+
+            ReelSceneView(
+                reelColumns: reelColumns,
+                reelRolledThisTurn: reelRolledThisTurn,
+                lastRolledIndex: lastRolledIndex,
+                onReelTap: onReelTap
+            )
+            .frame(width: 670, height: 390)
+            .position(x: 416, y: 1485)
+            .zIndex(10)
+
+            // MARK: - Bottom Arrows
+            // All active arrows use the same shared blink phase.
+
+            ForEach(0..<3, id: \.self) { index in
+                BlinkingReelArrow(
+                    symbol: "⌃",
+                    isActive: canBlinkArrow(index),
+                    isBright: sharedBlinkPhase
+                )
+                .position(
+                    x: reelXPosition(index),
+                    y: 1730
+                )
+            }
+        }
+        .task {
+            await runSharedBlinkLoop()
+        }
+        .onChange(of: resetKey) { _, _ in
+            // When a new attempt starts and reelRolledThisTurn resets,
+            // force all arrows back into the same phase.
+            sharedBlinkPhase = false
         }
     }
 
     private var cleanRerollText: String {
         rerollText.replacingOccurrences(of: "↻ ", with: "")
+    }
+
+    private var resetKey: String {
+        reelRolledThisTurn.map { $0 ? "1" : "0" }.joined()
     }
 
     private func reelXPosition(_ index: Int) -> CGFloat {
@@ -100,6 +137,60 @@ struct ReelLayout: View {
             return 617
         default:
             return 416
+        }
+    }
+
+    private func canBlinkArrow(_ index: Int) -> Bool {
+        guard index >= 0 && index < reelRolledThisTurn.count else {
+            return false
+        }
+
+        // false = this reel can still be rolled
+        // true = this reel has already been used
+        return reelRolledThisTurn[index] == false
+    }
+
+    private func runSharedBlinkLoop() async {
+        while !Task.isCancelled {
+            await MainActor.run {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    sharedBlinkPhase.toggle()
+                }
+            }
+
+            try? await Task.sleep(nanoseconds: 500_000_000)
+        }
+    }
+}
+
+struct BlinkingReelArrow: View {
+    let symbol: String
+    let isActive: Bool
+    let isBright: Bool
+
+    private let arrowSize: CGFloat = 52
+
+    var body: some View {
+        GamePixelText(symbol, size: arrowSize)
+            .opacity(currentOpacity)
+            .scaleEffect(currentScale)
+            .animation(.easeInOut(duration: 0.5), value: isBright)
+            .animation(.easeOut(duration: 0.15), value: isActive)
+    }
+
+    private var currentOpacity: Double {
+        if isActive {
+            return isBright ? 1.0 : 0.25
+        } else {
+            return 0.30
+        }
+    }
+
+    private var currentScale: CGFloat {
+        if isActive {
+            return isBright ? 1.16 : 1.0
+        } else {
+            return 1.0
         }
     }
 }
