@@ -44,12 +44,15 @@ final class GameLayoutViewModel: ObservableObject {
     private let maxRollsPerTurn = 3
     
     // MARK: - Battle State
-    
+
     private var currentWave: Int = 1
     private var accumulatedBonusHP: Int = 0
     private var accumulatedBonusAttack: Int = 0
-    
-    private let attackDamage = 20
+
+    private var isMonsterTurn: Bool = false
+    private var hasDismissedTapToPlay: Bool = false
+
+    private var enemyAttackValue: Int { 8 + currentWave * 3 }
     
     init() {
         startNewTurn()
@@ -180,9 +183,9 @@ final class GameLayoutViewModel: ObservableObject {
     // MARK: - Reel
     
     func rollReel(index: Int) {
-        guard overlay == nil else {
-            return
-        }
+        guard overlay == nil else { return }
+        guard !isMonsterTurn else { return }
+        hasDismissedTapToPlay = true
         
         guard let result = reelManager.createRollResult(
             index: index,
@@ -274,26 +277,62 @@ final class GameLayoutViewModel: ObservableObject {
     }
     
     // MARK: - Attack
-    
+
     func attack() {
         guard layoutData.canAttack else { return }
         guard overlay == nil else { return }
-        
+        hasDismissedTapToPlay = true
+
+        // --- Player turn ---
+        let enemyElement = enemyAppearance.bodyElement
+        let playerDamage = DamageCalculator.calculateDamage(
+            playerElements: symbols,
+            enemyElement: enemyElement,
+            baseAttack: currentAttackValue()
+        )
+
+        let strongCount = symbols.filter { $0.damageMultiplier(against: enemyElement) == 2.0 }.count
+        let comboLabel = strongCount == 3 ? "TRIPLE x4" : strongCount == 2 ? "DOUBLE x2" : "none"
+        print("⚔️ PLAYER: \(playerDamage) DMG | [\(symbols.map { $0.rawValue }.joined(separator: ", "))] vs \(enemyElement.rawValue) | Combo: \(comboLabel)")
+
         playerAnimationState = .attack
+        layoutData.enemyHP = max(0, layoutData.enemyHP - playerDamage)
+
         Task {
             try? await Task.sleep(nanoseconds: 600_000_000)
             playerAnimationState = .idle
         }
-        
-        layoutData.enemyHP = max(0, layoutData.enemyHP - attackDamage)
-        
+
         if layoutData.enemyHP <= 0 {
-            showWaveCleared()
-        } else {
-            startNewTurn()
+            layoutData.isEnemyDefeated = true
+            Task {
+                try? await Task.sleep(nanoseconds: 900_000_000)
+                showWaveCleared()
+                persistCurrentRun()
+            }
+            return
         }
-        
-        persistCurrentRun()
+
+        // --- Monster turn ---
+        isMonsterTurn = true
+        syncLayout()
+
+        Task {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+
+            let monsterDamage = enemyAttackValue
+            print("👹 MONSTER: \(monsterDamage) DMG | Element: \(enemyElement.rawValue)")
+            layoutData.playerHP = max(0, layoutData.playerHP - monsterDamage)
+            isMonsterTurn = false
+
+            if layoutData.playerHP <= 0 {
+                markPlayerDead()
+            } else {
+                startNewTurn()
+            }
+
+            persistCurrentRun()
+        }
     }
     
     // MARK: - Player Death
@@ -532,12 +571,10 @@ final class GameLayoutViewModel: ObservableObject {
     // MARK: - Wave
     
     private func nextWave() {
-        
-        let currentWave = Int(layoutData.waveText) ?? 1
-        let nextWave = currentWave + 1
+        currentWave += 1
 
-        layoutData.waveText = String(format: "%03d", nextWave)
         layoutData.enemyHP = layoutData.enemyMaxHP
+        layoutData.isEnemyDefeated = false
         enemyAppearance = EnemyAppearance.random()
 
         overlay = nil
@@ -590,13 +627,8 @@ final class GameLayoutViewModel: ObservableObject {
             layoutData.rerollText = "↻ \(remainingRollCount())/3"
             layoutData.reelColumns = currentReelColumns
             layoutData.reelRolledThisTurn = rolledThisTurn
-            layoutData.canAttack = !isRolling && overlay == nil && layoutData.playerHP > 0
-            
-//            layoutData.waveText = String(format: "%03d", currentWave)
-//            layoutData.rerollText = "↻ \(remainingRollCount())/3"
-//            layoutData.reelColumns = currentReelColumns
-//            layoutData.reelRolledThisTurn = rolledThisTurn
-//            layoutData.canAttack = !isRolling && overlay == nil && layoutData.playerHP > 0
+            layoutData.canAttack = !isRolling && !isMonsterTurn && overlay == nil && layoutData.playerHP > 0
+            layoutData.showTapToPlay = currentWave == 1 && !hasDismissedTapToPlay
         }
     
 }

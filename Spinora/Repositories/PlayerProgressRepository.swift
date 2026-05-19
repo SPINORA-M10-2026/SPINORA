@@ -24,6 +24,10 @@ final class PlayerProgressRepository {
         )
 
         if let existingProfile = try context.fetch(descriptor).first {
+            if existingProfile.baseAttack == 80 {
+                existingProfile.baseAttack = 20
+                try context.save()
+            }
             return existingProfile
         }
 

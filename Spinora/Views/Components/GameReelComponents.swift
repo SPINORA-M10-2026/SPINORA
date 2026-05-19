@@ -36,6 +36,7 @@ struct ReelLayout: View {
     let reelColumns: [[String]]
     let reelRolledThisTurn: [Bool]
     let lastRolledIndex: Int?
+    let showTapToPlay: Bool
     let onGuidebookTap: () -> Void
     let onReelTap: (Int) -> Void
 
@@ -67,6 +68,16 @@ struct ReelLayout: View {
             }
             .position(x: 416, y: 1195)
 
+            // Down arrows
+            // ZStack {
+            //     // SpriteKit reel panel only
+            //     ReelSceneView(
+            //         reelColumns: reelColumns,
+            //         reelRolledThisTurn: reelRolledThisTurn,
+            //         lastRolledIndex: lastRolledIndex,
+            //         showTapToPlay: showTapToPlay,
+            //         onReelTap: onReelTap
+
             // MARK: - Top Arrows
             // All active arrows use the same shared blink phase.
 
@@ -85,9 +96,14 @@ struct ReelLayout: View {
             // MARK: - Reel Machine
 
             ReelSceneView(
+//                reelColumns: reelColumns,
+//                reelRolledThisTurn: reelRolledThisTurn,
+//                lastRolledIndex: lastRolledIndex,
+//                onReelTap: onReelTap
                 reelColumns: reelColumns,
                 reelRolledThisTurn: reelRolledThisTurn,
                 lastRolledIndex: lastRolledIndex,
+                showTapToPlay: showTapToPlay,
                 onReelTap: onReelTap
             )
             .frame(width: 670, height: 390)

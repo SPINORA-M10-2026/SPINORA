@@ -19,6 +19,14 @@ final class ReelGameScene: SKScene {
 
     var onReelTap: ((Int) -> Void)?
 
+    var showTapToPlay: Bool = true {
+        didSet {
+            if !showTapToPlay { hideTapToPlay() }
+        }
+    }
+
+    private var tapLabel: SKLabelNode?
+    private var panelNode = SKShapeNode()
     private var machineBaseNode = SKSpriteNode()
 
     private var topRowOverlayNodes: [SKShapeNode] = []
@@ -101,6 +109,14 @@ final class ReelGameScene: SKScene {
         }
     }
 
+    func hideTapToPlay() {
+        guard let label = tapLabel else { return }
+        tapLabel = nil
+        label.run(.sequence([
+            .fadeOut(withDuration: 0.25),
+            .removeFromParent()
+        ]))
+    }
     private func buildScene() {
         removeAllChildren()
 
@@ -178,6 +194,16 @@ final class ReelGameScene: SKScene {
             bottomSymbol.zPosition = 30
             addChild(bottomSymbol)
             bottomSymbols.append(bottomSymbol)
+        }
+
+        tapLabel = nil
+        if showTapToPlay {
+            let label = makeLabel(text: "TAP TO PLAY!", fontSize: 40)
+            label.position = CGPoint(x: centerX, y: centerY)
+            label.zPosition = 40
+            label.alpha = 0.88
+            addChild(label)
+            tapLabel = label
         }
 
         // MARK: - Full Top/Bottom Row Dark Overlays

@@ -26,6 +26,15 @@ struct ArenaLayout: View {
             )
             .frame(width: 220, height: 40)
             .position(x: 460, y: 430)
+            // .frame(width: 270, height: 30)
+            .opacity(data.isEnemyDefeated ? 0.0 : 1.0)
+            .animation(.easeOut(duration: 0.3), value: data.isEnemyDefeated)
+            // .position(x: 445, y: 455)
+            
+            // enemy evatar
+//            PlayerSpriteView()
+//                .frame(width: 220, height: 220)
+//                .position(x: 690, y: 427)
 
             // enemy avatar
             Group {
@@ -42,6 +51,10 @@ struct ArenaLayout: View {
                 }
             }
             .position(x: 660, y: 490 + enemyFloat)
+            .scaleEffect(data.isEnemyDefeated ? 0.2 : 1.0)
+            .opacity(data.isEnemyDefeated ? 0.0 : 1.0)
+            .animation(.easeOut(duration: 0.6), value: data.isEnemyDefeated)
+            // .position(x: 690, y: 525 + enemyFloat)
             .onAppear {
                 withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
                     enemyFloat = -12
