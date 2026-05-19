@@ -150,4 +150,67 @@ final class SpinoraTests: XCTestCase {
         print("Message : \(summary.battleMessage)")
         print("\n============================\n")
     }
+
+    // MARK: - 7. Attack Button Press — Weakness Correlation Report
+
+    func testAttackButtonPress() {
+        // Simulasi state saat tombol Attack ditekan
+        let player  = Character(hp: 100, maxHp: 100, baseAttack: 20, element: nil)
+        let monster = Character(hp: 200, maxHp: 200, baseAttack: 15, element: .fire)
+
+        // Ganti symbols di sini untuk simulasi reel yang berbeda
+        let reelSymbols: [Element] = [.water, .fire, .earth]
+        let reel = ReelState(symbols: reelSymbols, rolledThisTurn: [true, true, true])
+
+        let monsterElement = monster.element!
+
+        // Elemen apa yang kuat terhadap monster ini
+        let effectiveElements = Element.allCases.filter { $0.beats(monsterElement) }
+
+        print("\n╔══════════════════════════════════════╗")
+        print("║        ATTACK BUTTON PRESSED         ║")
+        print("╚══════════════════════════════════════╝")
+
+        print("\n── Monster Info ──────────────────────")
+        print("  Element  : \(monsterElement.name)")
+        print("  HP       : \(monster.hp)/\(monster.maxHp)")
+        print("  ATK      : \(monster.baseAttack)")
+        print("  Weakness : \(effectiveElements.map(\.name).joined(separator: ", "))")
+
+        print("\n── Reel Result ───────────────────────")
+        for (index, symbol) in reel.symbols.enumerated() {
+            let multiplier = symbol.damageMultiplier(against: monsterElement)
+            let label: String
+            switch multiplier {
+            case 2.0: label = "SUPER EFFECTIVE ×2.0 ✓"
+            case 0.5: label = "Not Effective   ×0.5 ✗"
+            default:  label = "Neutral         ×1.0 –"
+            }
+            print("  Slot \(index + 1): \(symbol.name.padding(toLength: 6, withPad: " ", startingAt: 0)) → \(label)")
+        }
+
+        let hitCount = reel.symbols.filter { $0.damageMultiplier(against: monsterElement) == 2.0 }.count
+        let isCorrelated = hitCount > 0
+
+        print("\n── Weakness Correlation ──────────────")
+        print("  Slots kena weakness : \(hitCount)/\(reel.symbols.count)")
+        print("  Correlated          : \(isCorrelated ? "YES ✓" : "NO ✗")")
+
+        let (_, updatedMonster, summary) = combat.resolveAttack(player: player, monster: monster, reelState: reel)
+
+        print("\n── Combat Result ─────────────────────")
+        print("  Combo         : \(summary.comboEffect == .none ? "Tidak ada" : summary.comboEffect.displayName)")
+        print("  Player Damage : \(summary.playerDamage)")
+        print("  Monster HP    : \(monster.hp) → \(updatedMonster.hp)/\(updatedMonster.maxHp)")
+        print("  Monster Balas : \(summary.monsterDamage > 0 ? "\(summary.monsterDamage) DMG" : "Tidak (sudah mati)")")
+        print("  Message       : \(summary.battleMessage)")
+        print("\n══════════════════════════════════════\n")
+
+        // Assertions — pastikan logika benar
+        XCTAssertGreaterThan(summary.playerDamage, 0, "Damage harus lebih dari 0")
+        let actualHitCount = summary.playerElements.filter {
+            $0.damageMultiplier(against: monsterElement) == 2.0
+        }.count
+        XCTAssertEqual(actualHitCount, hitCount, "Jumlah slot kena weakness harus konsisten")
+    }
 }

@@ -16,6 +16,8 @@ final class GameViewModel: ObservableObject {
     @Published var reelState: ReelState
     @Published var isGameOver: Bool = false
     @Published var isRolling: Bool = false
+    @Published var playerAnimationState: PlayerAnimationState = .idle
+    @Published var enemyAppearance: EnemyAppearance = EnemyAppearance.random()
     @Published var battleMessage: String = ""
     @Published var currentWave: Int = 1
     @Published var overlay: GameOverlayType? = nil
@@ -36,7 +38,9 @@ final class GameViewModel: ObservableObject {
     init(reelManager: ReelManager = ReelManager()) {
         self.reelManager = reelManager
         self.player = Character(hp: 100, maxHp: 100, baseAttack: 20, element: nil)
-        self.monster = Self.makeMonster(wave: 1)
+        let (firstMonster, firstAppearance) = Self.makeMonsterAndAppearance(wave: 1)
+        self.monster = firstMonster
+        self.enemyAppearance = firstAppearance
         self.reelState = reelManager.makeNewTurnState()
     }
 
@@ -68,6 +72,12 @@ final class GameViewModel: ObservableObject {
 
     func attack() {
         guard !isGameOver, overlay == nil, !isRolling else { return }
+
+        playerAnimationState = .attack
+        Task {
+            try? await Task.sleep(nanoseconds: 600_000_000)
+            playerAnimationState = .idle
+        }
 
         let (updatedPlayer, updatedMonster, summary) = combatManager.resolveAttack(
             player: player,
@@ -116,13 +126,17 @@ final class GameViewModel: ObservableObject {
 
     private func advanceWave() {
         currentWave += 1
-        monster = Self.makeMonster(wave: currentWave)
+        let (newMonster, newAppearance) = Self.makeMonsterAndAppearance(wave: currentWave)
+        monster = newMonster
+        enemyAppearance = newAppearance
         reelState = reelManager.makeNewTurnState()
         overlay = nil
     }
 
     func restartWave() {
-        monster = Self.makeMonster(wave: currentWave)
+        let (newMonster, newAppearance) = Self.makeMonsterAndAppearance(wave: currentWave)
+        monster = newMonster
+        enemyAppearance = newAppearance
         reelState = reelManager.makeNewTurnState()
         isGameOver = false
         overlay = nil
@@ -132,7 +146,9 @@ final class GameViewModel: ObservableObject {
     func resetGame() {
         currentWave = 1
         player = Character(hp: 100, maxHp: 100, baseAttack: 20, element: nil)
-        monster = Self.makeMonster(wave: 1)
+        let (newMonster, newAppearance) = Self.makeMonsterAndAppearance(wave: 1)
+        monster = newMonster
+        enemyAppearance = newAppearance
         reelState = reelManager.makeNewTurnState()
         isGameOver = false
         overlay = nil
@@ -187,7 +203,9 @@ final class GameViewModel: ObservableObject {
         let state = SavedRunMapper.toGameState(from: model)
         currentWave = state.wave
         player = state.player
-        monster = Self.makeMonster(wave: currentWave)
+        let (loadedMonster, loadedAppearance) = Self.makeMonsterAndAppearance(wave: currentWave)
+        monster = loadedMonster
+        enemyAppearance = loadedAppearance
         reelState = reelManager.makeNewTurnState()
         battleMessage = ""
         isGameOver = false
@@ -207,10 +225,11 @@ final class GameViewModel: ObservableObject {
     // MARK: - Monster Factory
     // Coordinate with Person 2 (Balance) before adjusting scaling numbers
 
-    private static func makeMonster(wave: Int) -> Character {
+    private static func makeMonsterAndAppearance(wave: Int) -> (Character, EnemyAppearance) {
+        let appearance = EnemyAppearance.random()
         let hp  = 50 + wave * 20
         let atk = 8  + wave * 3
-        let element = Element.allCases[wave % Element.allCases.count]
-        return Character(hp: hp, maxHp: hp, baseAttack: atk, element: element)
+        let monster = Character(hp: hp, maxHp: hp, baseAttack: atk, element: appearance.bodyElement)
+        return (monster, appearance)
     }
 }

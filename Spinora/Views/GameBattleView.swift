@@ -9,6 +9,8 @@ import SwiftUI
 
 struct GameBattleView: View {
     let data: BattleLayoutData
+    var playerState: PlayerAnimationState = .idle
+    var enemyAppearance: EnemyAppearance? = nil
 
     let onPauseTap: () -> Void
     let onAttackTap: () -> Void
@@ -53,7 +55,7 @@ struct GameBattleView: View {
         ZStack {
             TopFrameLayout()
 
-            ArenaLayout(data: data)
+            ArenaLayout(data: data, playerState: playerState, enemyAppearance: enemyAppearance)
 
 //            BottomFrameLayout()
 

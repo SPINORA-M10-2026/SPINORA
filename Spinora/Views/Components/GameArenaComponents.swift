@@ -9,6 +9,10 @@ import SwiftUI
 
 struct ArenaLayout: View {
     let data: BattleLayoutData
+    var playerState: PlayerAnimationState = .idle
+    var enemyAppearance: EnemyAppearance? = nil
+
+    @State private var enemyFloat: CGFloat = 0
 
     var body: some View {
         ZStack {
@@ -23,14 +27,38 @@ struct ArenaLayout: View {
             .position(x: 445, y: 455)
             
             // enemy evatar
-            PlayerSpriteView()
-                .frame(width: 220, height: 220)
-                .position(x: 690, y: 427)
+//            PlayerSpriteView()
+//                .frame(width: 220, height: 220)
+//                .position(x: 690, y: 427)
+
+            Group {
+                if let appearance = enemyAppearance {
+                    EnemySpriteView(appearance: appearance)
+                        .frame(width: 175, height: 175)
+                } else {
+                    AssetSlot(
+                        "enemy_idle",
+                        fill: Color.purple.opacity(0.18),
+                        cornerRadius: 16
+                    )
+                    .frame(width: 175, height: 175)
+                }
+            }
+            .position(x: 690, y: 525 + enemyFloat)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
+                    enemyFloat = -12
+                }
+            }
+
+            PlayerSpriteView(state: playerState)
+                .frame(width: 165, height: 205)
+                .position(x: 112, y: 860)
 
             // player avatar
-            PlayerSpriteView()
-                .frame(width: 220, height: 220)
-                .position(x: 120, y: 960)
+            // PlayerSpriteView()
+            //     .frame(width: 220, height: 220)
+            //     .position(x: 120, y: 960)
             
             // sample attack
 //            PlayerSpriteView(state: .attack)
