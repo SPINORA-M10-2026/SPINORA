@@ -25,9 +25,9 @@ struct ArenaLayout: View {
             .position(x: 445, y: 455)
             
             // enemy evatar
-            PlayerSpriteView()
-                .frame(width: 220, height: 220)
-                .position(x: 690, y: 427)
+//            PlayerSpriteView()
+//                .frame(width: 220, height: 220)
+//                .position(x: 690, y: 427)
 
             if let appearance = enemyAppearance {
                 EnemySpriteView(appearance: appearance)
