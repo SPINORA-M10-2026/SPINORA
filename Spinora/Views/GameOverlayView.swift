@@ -126,44 +126,25 @@ private struct PauseOverlay: View {
     let onResetGame: () -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            HelmetBadgeView()
-                .offset(y: 26)
-                .zIndex(2)
-
-            VStack(spacing: 26) {
-                GameWideButton(
-                    title: "RESUME",
-                    width: 420,
-                    height: 76,
-                    action: onResume
-                )
-
-                GameWideButton(
-                    title: "RESTART WAVE",
-                    width: 420,
-                    height: 76,
-                    action: onRestartWave
-                )
-
-                GameWideButton(
-                    title: "RESET GAME",
-                    width: 420,
-                    height: 76,
-                    action: onResetGame
-                )
+        ZStack {
+            // backround menu pause
+            Image("alert_resume")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 350)
+                .offset(y: -20)
+            
+            VStack(spacing: 20) {
+                // button resume
+                MenuPauseButton(image: "button_resume_default", action: onResume)
+                
+                // button restart
+                MenuPauseButton(image: "button_restart_wave_default", action: onRestartWave)
+                
+                // button reset
+                MenuPauseButton(image: "button_reset_game_default", action: onResetGame)
             }
-            .padding(.horizontal, 34)
-            .padding(.vertical, 48)
-            .background(GameColor.wood)
-            .clipShape(RoundedRectangle(cornerRadius: 30))
-            .overlay(
-                RoundedRectangle(cornerRadius: 30)
-                    .stroke(GameColor.wood, lineWidth: 18)
-            )
-            .shadow(color: .black.opacity(0.45), radius: 0, x: 0, y: 12)
         }
-        .padding(.horizontal, 26)
     }
 }
 
@@ -175,40 +156,30 @@ private struct ConfirmationOverlay: View {
     let onCancel: () -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            HelmetBadgeView()
-                .offset(y: 26)
-                .zIndex(2)
+        ZStack {
+            // backround menu pause
+            Image("alert_resume")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 350)
+                .offset(y: -20)
 
             VStack(spacing: 32) {
-                GamePixelText(title, size: 28)
+                // text alert
+                GamePixelText(title, size: 24, maxWidth: 260)
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.55)
                     .padding(.horizontal, 12)
 
-                HStack(spacing: 80) {
-                    SquareChoiceButton(
-                        symbol: "✓",
-                        action: onConfirm
-                    )
-
-                    SquareChoiceButton(
-                        symbol: "✕",
-                        action: onCancel
-                    )
+                HStack(spacing: 50) {
+                    // button confirm
+                    MenuApprovalPauseButton(image: "button_check_default", action: onConfirm)
+                    
+                    // button reject
+                    MenuApprovalPauseButton(image: "button_cross_default", action: onCancel)
                 }
             }
-            .padding(.horizontal, 32)
-            .padding(.vertical, 48)
-            .background(GameColor.wood)
-            .clipShape(RoundedRectangle(cornerRadius: 30))
-            .overlay(
-                RoundedRectangle(cornerRadius: 30)
-                    .stroke(GameColor.wood, lineWidth: 18)
-            )
-            .shadow(color: .black.opacity(0.45), radius: 0, x: 0, y: 12)
         }
-        .padding(.horizontal, 26)
     }
 }

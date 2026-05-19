@@ -16,6 +16,7 @@ struct ArenaLayout: View {
 
     var body: some View {
         ZStack {
+            // enemy HP bar
             HealthBarSlot(
                 label: "enemy_hp_bar",
                 value: "\(data.enemyHP)",
@@ -23,53 +24,49 @@ struct ArenaLayout: View {
                 max: data.enemyMaxHP,
                 fillColor: GameColor.hpRed
             )
-            .frame(width: 270, height: 30)
+            .frame(width: 220, height: 40)
+            .position(x: 460, y: 430)
+            // .frame(width: 270, height: 30)
             .opacity(data.isEnemyDefeated ? 0.0 : 1.0)
             .animation(.easeOut(duration: 0.3), value: data.isEnemyDefeated)
-            .position(x: 445, y: 455)
+            // .position(x: 445, y: 455)
             
             // enemy evatar
 //            PlayerSpriteView()
 //                .frame(width: 220, height: 220)
 //                .position(x: 690, y: 427)
 
+            // enemy avatar
             Group {
                 if let appearance = enemyAppearance {
                     EnemySpriteView(appearance: appearance)
-                        .frame(width: 175, height: 175)
+                        .frame(width: 270, height: 270)
                 } else {
                     AssetSlot(
                         "enemy_idle",
                         fill: Color.purple.opacity(0.18),
                         cornerRadius: 16
                     )
-                    .frame(width: 175, height: 175)
+                    .frame(width: 270, height: 270)
                 }
             }
+            .position(x: 660, y: 490 + enemyFloat)
             .scaleEffect(data.isEnemyDefeated ? 0.2 : 1.0)
             .opacity(data.isEnemyDefeated ? 0.0 : 1.0)
             .animation(.easeOut(duration: 0.6), value: data.isEnemyDefeated)
-            .position(x: 690, y: 525 + enemyFloat)
+            // .position(x: 690, y: 525 + enemyFloat)
             .onAppear {
                 withAnimation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true)) {
                     enemyFloat = -12
                 }
             }
 
-            PlayerSpriteView(state: playerState)
-                .frame(width: 165, height: 205)
-                .position(x: 112, y: 860)
-
             // player avatar
-            // PlayerSpriteView()
-            //     .frame(width: 220, height: 220)
-            //     .position(x: 120, y: 960)
-            
-            // sample attack
-//            PlayerSpriteView(state: .attack)
-//                .frame(width: 165, height: 205)
-//                .position(x: 112, y: 860)
+            PlayerSpriteView(state: playerState)
+                .frame(width: 270)
+                .position(x: 150, y: 820)
 
+            // player HP bar
             HealthBarSlot(
                 label: "player_hp_bar",
                 value: "\(data.playerHP)",
@@ -77,12 +74,13 @@ struct ArenaLayout: View {
                 max: data.playerMaxHP,
                 fillColor: GameColor.hpGreen
             )
-            .frame(width: 205, height: 28)
-            .position(x: 350, y: 920)
+            .frame(width: 220, height: 40)
+            .position(x: 360, y: 830)
 
+            // player ATK bar
             AttackStatSlot(text: data.playerAttackText)
-                .frame(width: 140, height: 34)
-                .position(x: 290, y: 950)
+                .frame(width: 140, height: 40)
+                .position(x: 290, y: 870)
         }
     }
 }
