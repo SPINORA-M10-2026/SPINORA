@@ -57,7 +57,7 @@ struct GameBattleView: View {
 
             ArenaLayout(data: data, playerState: playerState, enemyAppearance: enemyAppearance)
 
-            BottomFrameLayout()
+//            BottomFrameLayout()
 
             ReelLayout(
                 rerollText: data.rerollText,

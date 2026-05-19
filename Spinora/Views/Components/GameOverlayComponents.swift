@@ -33,29 +33,17 @@ struct RewardCardView: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 14) {
-                AssetSlot(
-                    "reward_icon",
-                    fill: Color.white.opacity(0.14),
-                    cornerRadius: 14,
-                    showLabel: false
-                )
-                .overlay(
-                    Text(icon)
-                        .font(.system(size: 58))
-                )
-                .frame(width: 96, height: 80)
-
-                GamePixelText(title, size: 26)
+            ZStack {
+                Image(icon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 210, height: 140)
+                    .cornerRadius(18)
+                
+                GamePixelText(title, size: 20)
                     .foregroundStyle(.white)
+                    .offset(x: 0, y: 20)
             }
-            .frame(width: 205, height: 185)
-            .background(GameColor.wood)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(GameColor.buttonYellow, lineWidth: 7)
-            )
         }
         .buttonStyle(.plain)
     }

@@ -43,55 +43,45 @@ struct ReelLayout: View {
         ZStack {
             // Guidebook button — same horizontal line as reroll chance
             Button(action: onGuidebookTap) {
-                AssetSlot(
-                    "guidebook_button",
-                    fill: GameColor.wood,
-                    cornerRadius: 16,
-                    showLabel: false
-                )
-                .overlay(
-                    GamePixelText("☰", size: 28)
-                        .foregroundStyle(Color(red: 1.0, green: 0.75, blue: 0.45))
-                )
+                Image("button_element_book")
+                    .resizable()
+                    .scaledToFit()
+                    .cornerRadius(18)
             }
             .buttonStyle(.plain)
-            .frame(width: 82, height: 82)
-            .position(x: 60, y: 1195)
+            .frame(height: 270)
+            .position(x: 10, y: 1195)
 
             // Reroll counter
             HStack(spacing: 10) {
-                GamePixelText("↻", size: 34)
+                Image("icon_reroll_images")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 40)
 
                 GamePixelText(cleanRerollText, size: 32)
             }
             .position(x: 416, y: 1195)
 
             // Down arrows
-            ForEach(0..<3, id: \.self) { index in
-                GamePixelText("⌄", size: 32)
-                    .position(
-                        x: reelXPosition(index),
-                        y: 1285
-                    )
-            }
-
-            // SpriteKit reel panel only
-            ReelSceneView(
-                reelColumns: reelColumns,
-                reelRolledThisTurn: reelRolledThisTurn,
-                lastRolledIndex: lastRolledIndex,
-                onReelTap: onReelTap
-            )
-            .frame(width: 670, height: 390)
-            .position(x: 416, y: 1485)
-
-            // Up arrows
-            ForEach(0..<3, id: \.self) { index in
-                GamePixelText("⌃", size: 32)
-                    .position(
-                        x: reelXPosition(index),
-                        y: 1710
-                    )
+            ZStack {
+                // SpriteKit reel panel only
+                ReelSceneView(
+                    reelColumns: reelColumns,
+                    reelRolledThisTurn: reelRolledThisTurn,
+                    lastRolledIndex: lastRolledIndex,
+                    onReelTap: onReelTap
+                )
+                .frame(width: 670, height: 390)
+                .position(x: 416, y: 1485)
+                .zIndex(10)
+                
+                Image("background_jackpot_arrow_blink")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 850)
+                    .zIndex(5)
+                    .position(x: 416, y: 890)
             }
         }
     }

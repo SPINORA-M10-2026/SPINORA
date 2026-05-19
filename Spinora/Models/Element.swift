@@ -8,9 +8,9 @@
 import Foundation
 
 enum Element: String, CaseIterable, Identifiable {
-    case fire = "🔥"
-    case water = "💧"
-    case earth = "🪨"
+    case fire = "fire"
+    case water = "water"
+    case earth = "earth"
 
     var id: String {
         rawValue

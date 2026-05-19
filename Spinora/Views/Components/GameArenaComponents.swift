@@ -14,15 +14,6 @@ struct ArenaLayout: View {
 
     var body: some View {
         ZStack {
-            AssetSlot(
-                "battle_background",
-                fill: Color(red: 0.86, green: 0.75, blue: 0.48),
-                cornerRadius: 0,
-                showLabel: true
-            )
-            .frame(width: 832, height: 850)
-            .position(x: 416, y: 715)
-
             HealthBarSlot(
                 label: "enemy_hp_bar",
                 value: "\(data.enemyHP)",
@@ -32,6 +23,11 @@ struct ArenaLayout: View {
             )
             .frame(width: 270, height: 30)
             .position(x: 445, y: 455)
+            
+            // enemy evatar
+            PlayerSpriteView()
+                .frame(width: 220, height: 220)
+                .position(x: 690, y: 427)
 
             if let appearance = enemyAppearance {
                 EnemySpriteView(appearance: appearance)
@@ -60,14 +56,15 @@ struct ArenaLayout: View {
                 .frame(width: 165, height: 205)
                 .position(x: 112, y: 860)
 
-            AssetSlot(
-                "player_shadow",
-                fill: Color.black.opacity(0.25),
-                cornerRadius: 20,
-                showLabel: false
-            )
-            .frame(width: 120, height: 24)
-            .position(x: 112, y: 975)
+            // player avatar
+            // PlayerSpriteView()
+            //     .frame(width: 220, height: 220)
+            //     .position(x: 120, y: 960)
+            
+            // sample attack
+//            PlayerSpriteView(state: .attack)
+//                .frame(width: 165, height: 205)
+//                .position(x: 112, y: 860)
 
             HealthBarSlot(
                 label: "player_hp_bar",
@@ -77,11 +74,11 @@ struct ArenaLayout: View {
                 fillColor: GameColor.hpGreen
             )
             .frame(width: 205, height: 28)
-            .position(x: 350, y: 820)
+            .position(x: 350, y: 920)
 
             AttackStatSlot(text: data.playerAttackText)
                 .frame(width: 140, height: 34)
-                .position(x: 325, y: 860)
+                .position(x: 290, y: 950)
         }
     }
 }

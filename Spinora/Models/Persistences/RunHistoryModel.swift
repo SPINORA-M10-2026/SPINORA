@@ -8,7 +8,8 @@ import SwiftData
 
 @Model
 final class RunHistoryModel {
-    var id: UUID
+    @Attribute(.unique) var id: String
+
     var runID: UUID
     var finalWave: Int
     var finalPlayerHP: Int
@@ -16,7 +17,7 @@ final class RunHistoryModel {
     var playedAt: Date
 
     init(
-        id: UUID = UUID(),
+        id: String = UUID().uuidString,
         runID: UUID = UUID(),
         finalWave: Int,
         finalPlayerHP: Int,
