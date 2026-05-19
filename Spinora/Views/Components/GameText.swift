@@ -10,10 +10,16 @@ import SwiftUI
 struct GamePixelText: View {
     let text: String
     let size: CGFloat
+    let maxWidth: CGFloat?
 
-    init(_ text: String, size: CGFloat) {
+    init(
+        _ text: String,
+        size: CGFloat,
+        maxWidth: CGFloat? = nil
+    ) {
         self.text = text
         self.size = size
+        self.maxWidth = maxWidth
     }
 
     var body: some View {
@@ -22,5 +28,6 @@ struct GamePixelText: View {
             .textCase(.uppercase)
             .foregroundStyle(.white)
             .shadow(color: GameColor.woodDark, radius: 0, x: 2, y: 2)
+            .frame(maxWidth: maxWidth)
     }
 }

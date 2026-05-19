@@ -49,23 +49,33 @@ struct RewardCardView: View {
     }
 }
 
-struct GameWideButton: View {
-    let title: String
-    let width: CGFloat
-    let height: CGFloat
+// for menu pause [ resume - restart wave - reset game ] in pause game
+struct MenuPauseButton: View {
+    let image: String
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            GamePixelText(title, size: 28)
-                .foregroundStyle(.white)
-                .frame(width: width, height: height)
-                .background(GameColor.wood)
-                .clipShape(RoundedRectangle(cornerRadius: 15))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 15)
-                        .stroke(GameColor.buttonYellow, lineWidth: 6)
-                )
+            Image(image)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 250)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// for menu approval [ restart wave - reset game ] in pause game
+struct MenuApprovalPauseButton: View {
+    let image: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(image)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80)
         }
         .buttonStyle(.plain)
     }
